@@ -1,6 +1,8 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Carousel, Card, Row, Col, Button } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import WebHeader from "../component/header";
+import WebFooter from "../component/footer";
 
 import slide1Img from "../assets/slide1.jpg";
 import slide2Img from "../assets/slide2.jpg";
@@ -81,11 +83,23 @@ const contentStyle = {
 
 const Home = () => {
   const carouselRef = useRef(null);
+  const [showHeader, setShowHeader] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setShowHeader(scrollY > 200);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div>
-      {/* Carousel Section */}
-      <Carousel ref={carouselRef} autoplay dots={false}>
+        <WebHeader visible={showHeader} />
+
+        <Carousel ref={carouselRef} autoplay dots={false}>
         {slides.map((slide) => (
           <div key={slide.id}>
             <div
@@ -95,8 +109,7 @@ const Home = () => {
                 paddingTop: "5rem",
               }}
             >
-              {/* Left Arrow */}
-              <button
+                <button
                 style={{
                   position: "absolute",
                   left: "20px",
@@ -115,7 +128,6 @@ const Home = () => {
                 <LeftOutlined />
               </button>
 
-              {/* Right Arrow */}
               <button
                 style={{
                   position: "absolute",
@@ -308,12 +320,9 @@ const Home = () => {
 
 
 
-    
-
-
-
-
+    <WebFooter /> 
     </div>
+    
   );
 };
 
