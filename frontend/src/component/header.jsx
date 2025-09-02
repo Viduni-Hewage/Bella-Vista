@@ -36,7 +36,7 @@ const WebHeader = ({ visible }) => {
         <Menu.Item key="decorations">Decorations</Menu.Item>
         <Menu.Item key="accessories">Accessories</Menu.Item>
         <Menu.Item key="news">News</Menu.Item>
-        <Menu.Item key="world">World of Bellavista</Menu.Item>
+        <Menu.Item key="world">World of BellaVista</Menu.Item>
       </Menu>
 
       <div style={{ fontSize: "1rem", display: "flex", alignItems: "center" }}>
