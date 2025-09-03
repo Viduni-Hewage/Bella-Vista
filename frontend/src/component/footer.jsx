@@ -1,4 +1,5 @@
 import { Layout, Row, Col } from "antd";
+import { useNavigate } from "react-router-dom";
 import {
   FacebookOutlined,
   InstagramOutlined,
@@ -8,16 +9,22 @@ import {
 const { Footer } = Layout;
 
 const WebFooter = () => {
+  const navigate = useNavigate();
+
   return (
     <Footer style={{ background: "#000", color: "#fff", padding: "5rem 4rem" }}>
       <Row justify="center" gutter={[70, 0]} style={{ marginBottom: "3rem" }}>
         <Col>
-            <h3 style={{ color: "#fff", fontSize: "1.1rem", margin: 0, fontWeight: 400 }}>
+            <h3 style={{ color: "#fff", fontSize: "1.1rem", margin: 0, fontWeight: 400, cursor:"pointer" }}
+              onClick={() => navigate("/news")}
+            >
             News
             </h3>
         </Col>
         <Col>
-            <h3 style={{ color: "#fff", fontSize: "1.1rem", margin: 0, fontWeight: 400 }}>
+            <h3 style={{ color: "#fff", fontSize: "1.1rem", margin: 0, fontWeight: 400, cursor:"pointer" }}
+               onClick={() => navigate("/world")}
+            >
             World of BellaVista
             </h3>
         </Col>

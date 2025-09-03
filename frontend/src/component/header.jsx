@@ -7,6 +7,32 @@ const { Header } = Layout;
 
 const WebHeader = ({ visible }) => {
   const navigate = useNavigate();
+
+  const handleMenuClick = (e) => {
+    switch (e.key) {
+      // case "jewelry":
+      //   navigate("/jewelry");
+      //   break;
+      // case "watches":
+      //   navigate("/watches");
+      //   break;
+      // case "decorations":
+      //   navigate("/decorations");
+      //   break;
+      // case "accessories":
+      //   navigate("/accessories");
+      //   break;
+      case "news":
+        navigate("/news");
+        break;
+      case "world":
+        navigate("/world");
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <Header
       style={{
@@ -27,11 +53,12 @@ const WebHeader = ({ visible }) => {
         zIndex: 1000,
       }}
     >
-      <div style={{ fontSize: "2rem", fontWeight: "bold", fontFamily: "'Baskervville', serif", color: "#9b3803ff"}}>Bellavista</div>
+      <div style={{ fontSize: "2rem", fontWeight: "bold", fontFamily: "'Baskervville', serif", color: "#9b3803ff"}}  onClick={() => navigate("/")}>Bellavista</div>
 
       <Menu
         mode="horizontal"
         style={{ flex: 1, justifyContent: "center", borderBottom: "none", fontSize: "1rem"  }}
+        onClick={handleMenuClick}
       >
         <Menu.Item key="jewelry">Jewelry</Menu.Item>
         <Menu.Item key="watches">Watches</Menu.Item>

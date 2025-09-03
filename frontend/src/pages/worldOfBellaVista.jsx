@@ -27,9 +27,9 @@ const WorldOfBellaVista = () => {
     // if (item === "Accessories") {
     //   navigate("/accessories");
     // }
-    // if (item === "News") {
-    //   navigate("/news");
-    // }
+    if (item === "News") {
+       navigate("/news");
+    }
   };
 
     return(
