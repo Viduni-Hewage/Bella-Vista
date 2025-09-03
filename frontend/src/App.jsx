@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import ScrollToTop from './component/ScrollToTop';
 import Layout from './hoc/Layout';
 import Home from './pages/homePage';
 import ShopByCategory from './pages/shopByCategory';
@@ -6,7 +7,12 @@ import Login from './pages/login';
 import SignUp from './pages/signUp';
 import WorldOfBellaVista from './pages/worldOfBellaVista';
 import News from './pages/news';
-import ScrollToTop from './component/ScrollToTop';
+import ErrorPage from './pages/404';
+import SuccessTransaction from './pages/successTransaction';
+import Jewelry from './pages/categories/jewelry';
+import Watches from './pages/categories/watches';
+import Accessories from './pages/categories/accessories';
+import Decorations from './pages/categories/decorations';
 
 const App = () => {
   return (
@@ -18,11 +24,20 @@ const App = () => {
         <Route index element={<Home />} />  
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<SignUp />} />
+        <Route path="*" element={<ErrorPage />} />
      
         <Route path="/" element={<Layout />}>        
-          <Route path="shop-by category" element={<ShopByCategory />} />
+          <Route path="shop-by-category" element={<ShopByCategory />}>
+            <Route index element={<Jewelry />} />  
+            <Route path="jewelry" element={<Jewelry />} />
+            <Route path="watches" element={<Watches />} />
+            <Route path="decorations" element={<Decorations />} />
+            <Route path="accessories" element={<Accessories />} />
+          </Route>
+
           <Route path="world" element={<WorldOfBellaVista />} />
           <Route path="news" element={<News />} />
+          <Route path="success-transaction" element={<SuccessTransaction />} />
         
         </Route>
       </Routes>
