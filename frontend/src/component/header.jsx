@@ -1,10 +1,12 @@
 import React from "react";
 import { Layout, Menu } from "antd";
 import { UserOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 const { Header } = Layout;
 
 const WebHeader = ({ visible }) => {
+  const navigate = useNavigate();
   return (
     <Header
       style={{
@@ -40,7 +42,9 @@ const WebHeader = ({ visible }) => {
       </Menu>
 
       <div style={{ fontSize: "1rem", display: "flex", alignItems: "center" }}>
-        <span style={{ marginRight: "20px", cursor: "pointer", display: "flex", alignItems: "center" }}>
+        <span style={{ marginRight: "20px", cursor: "pointer", display: "flex", alignItems: "center" }}
+        onClick={() => navigate("/login")}
+        >
             <UserOutlined style={{  fontSize: "20px", marginRight: "6px" }} /> Login
         </span>
         <span style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
