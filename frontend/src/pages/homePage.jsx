@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Carousel, Card, Row, Col, Button } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import WebHeader from "../component/header";
 import WebFooter from "../component/footer";
 
@@ -27,21 +28,18 @@ const slides = [
     bgImage: slide1Img,
     title: "BELLA VISTA",
     description: "Transform Every Outfit with Accessories That Speak Your Style.",
-    extra: <button style={{ zIndex: 10, background: "#fff", color: "black", border: "none", borderRadius: "3px", padding: "6px 70px", cursor: "pointer", fontSize: "1rem" }}>Shop Now</button>
   },
   {
     id: 2,
     bgImage: slide2Img,
     title: "BELLA VISTA",
     description: "Discover the Perfect Pieces to Add Elegance and Charm to Your Look.",
-    extra: <button style={{ zIndex: 10, background: "#fff", color: "black", border: "none", borderRadius: "3px", padding: "6px 70px", cursor: "pointer", fontSize: "1rem" }}>Shop Now</button>
   },
   {
     id: 3,
     bgImage: slide3Img,
     title: "BELLA VISTA",
     description: "From Minimalist to Statement, Find Accessories That Define You.",
-    extra: <button style={{ zIndex: 10, background: "#fff", color: "black", border: "none", borderRadius: "3px", padding: "6px 70px", cursor: "pointer", fontSize: "1rem" }}>Shop Now</button>
   },
   {
     id: 4,
@@ -53,16 +51,16 @@ const slides = [
 ];
 
 const cards = [
-  { title: "Necklaces", image: bts1, description: "This season, let your neckline shine. Delicate chains adorned with sparkling crystals and signature motifs create pieces that are both elegant and contemporary. Each necklace catches the light beautifully, making every outfit unforgettable.", buttonText: "Shop Now" },
-  { title: "Bracelets", image: bts2, description: "Add a touch of brilliance to your wrist. From sleek bangles to layered designs, our bracelets combine radiant crystals with refined craftsmanship, striking the perfect balance between subtle elegance and statement style.", buttonText: "Shop Now" },
-  { title: "Earrings", image: bts3, description: "Transform your look with earrings that dazzle and inspire. From graceful drops to bold hoops, each design is crafted to reflect light and personality. Perfect for both everyday elegance and special occasions.", buttonText: "Shop Now" },
+  { title: "Necklaces", image: bts1, description: "This season, let your neckline shine. Delicate chains adorned with sparkling crystals and signature motifs create pieces that are both elegant and contemporary. Each necklace catches the light beautifully, making every outfit unforgettable.", buttonText: "Shop Now"},
+  { title: "Bracelets", image: bts2, description: "Add a touch of brilliance to your wrist. From sleek bangles to layered designs, our bracelets combine radiant crystals with refined craftsmanship, striking the perfect balance between subtle elegance and statement style.", buttonText: "Shop Now"},
+  { title: "Earrings", image: bts3, description: "Transform your look with earrings that dazzle and inspire. From graceful drops to bold hoops, each design is crafted to reflect light and personality. Perfect for both everyday elegance and special occasions.", buttonText: "Shop Now"},
 ];
 
 const categoryCards = [
-  { title: "Jewelry", image: ct1 },
-  { title: "Watches", image: ct2 },
-  { title: "Decorations", image: ct3 },
-  { title: "Accessories", image: ct4 },
+  { title: "Jewelry", image: ct1, path: "/shop-by-category/jewelry"  },
+  { title: "Watches", image: ct2, path: "/shop-by-category/watches" },
+  { title: "Decorations", image: ct3, path: "/shop-by-category/decorations" },
+  { title: "Accessories", image: ct4, path: "/shop-by-category/accessories" },
 ];
 
 const newsCards = [
@@ -84,6 +82,7 @@ const contentStyle = {
 const Home = () => {
   const carouselRef = useRef(null);
   const [showHeader, setShowHeader] = useState(false);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const handleScroll = () => {
@@ -173,7 +172,23 @@ const Home = () => {
                 <p style={{ fontSize: "1.3rem", marginBottom: "1rem", fontWeight: "500" }}>
                   {slide.description}
                 </p>
-                <div>{slide.extra}</div>
+                <div>
+                  <button
+                    style={{
+                      zIndex: 10,
+                      background: "#fff",
+                      color: "black",
+                      border: "none",
+                      borderRadius: "3px",
+                      padding: "6px 70px",
+                      cursor: "pointer",
+                      fontSize: "1rem",
+                    }}
+                    onClick={() => navigate("/shop-by-category")}
+                  >
+                  Shop Now
+                </button>
+                </div>
               </div>
             </div>
           </div>
@@ -205,17 +220,18 @@ const Home = () => {
                   <img
                     alt={card.title}
                     src={card.image}
-                    style={{ height: "600px", border: "none" }} 
+                    style={{ height: "600px", border: "none", cursor:"pointer" }} 
+                    onClick={() => navigate("/shop-by-category/jewelry")} 
                   />
                 }
               >
-                <h3 style={{ fontSize: "1.7rem", marginBottom: "1.6rem", marginTop: "1.6rem", fontFamily: "'Baskervville', serif" }}>
+                <h3 style={{ fontSize: "1.7rem", marginBottom: "1.6rem", marginTop: "1.6rem", fontFamily: "'Baskervville', serif", cursor:"pointer" }} onClick={() => navigate("/shop-by-category/jewelry")} >
                   {card.title}
                 </h3>
 
                 <p style={{fontSize: "1.1rem", textAlign: "justify" }}>{card.description}</p>
-                <Button type="text" style={{fontSize: "1.1rem",color: "black",fontWeight: 400,textDecoration: "underline", textUnderlineOffset: "5px", padding: 0,cursor: "pointer", display: "block", textAlign: "left", background: "transparent", marginBottom: "2.5rem"}}  onMouseEnter={e => {e.currentTarget.style.color = "#555"; e.currentTarget.style.background = "transparent"; }} onMouseLeave={e => {e.currentTarget.style.color = "black"; e.currentTarget.style.background = "transparent"; }}>
-                  {card.buttonText}
+                <Button type="text" style={{fontSize: "1.1rem",color: "black",fontWeight: 400,textDecoration: "underline", textUnderlineOffset: "5px", padding: 0,cursor: "pointer", display: "block", textAlign: "left", background: "transparent", marginBottom: "2.5rem"}}  onMouseEnter={e => {e.currentTarget.style.color = "#555"; e.currentTarget.style.background = "transparent"; }} onMouseLeave={e => {e.currentTarget.style.color = "black"; e.currentTarget.style.background = "transparent"; }}  onClick={() => navigate("/shop-by-category/jewelry")} >
+                  {card.buttonText} 
                 </Button>
               </Card>
             </Col>
@@ -236,7 +252,7 @@ const Home = () => {
           <p style={{ fontSize: "1.05rem", lineHeight: "1.4",  marginBottom: "1.5rem" }}>
             Crafted with precision and elegance, the Bella Vista Rings Collection showcases timeless beauty in every design. Adorned with laboratory-grown diamonds, each ring reflects brilliance and style—from classic solitaires to contemporary statement pieces. Set in fine metals, these rings are made to shine for a lifetime. 
           </p>
-          <Button type="text" style={{fontSize: "1.1rem",color: "black",fontWeight: 400,textDecoration: "underline", textUnderlineOffset: "5px", padding: 0,cursor: "pointer", display: "block", textAlign: "left", background: "transparent", marginBottom: "2.5rem"}}  onMouseEnter={e => {e.currentTarget.style.color = "#555"; e.currentTarget.style.background = "transparent"; }} onMouseLeave={e => {e.currentTarget.style.color = "black"; e.currentTarget.style.background = "transparent"; }}>
+          <Button type="text" style={{fontSize: "1.1rem",color: "black",fontWeight: 400,textDecoration: "underline", textUnderlineOffset: "5px", padding: 0,cursor: "pointer", display: "block", textAlign: "left", background: "transparent", marginBottom: "2.5rem"}}  onMouseEnter={e => {e.currentTarget.style.color = "#555"; e.currentTarget.style.background = "transparent"; }} onMouseLeave={e => {e.currentTarget.style.color = "black"; e.currentTarget.style.background = "transparent"; }} onClick={() => navigate("/news")}>
                   Discover the Rings
           </Button>
       </div>     
@@ -249,7 +265,7 @@ const Home = () => {
     </div>
 
     <div style={{ padding: "5rem 4rem", background: "#fcf3eeff", textAlign: "center"}}>
-      <h2 style={{ fontSize: "2.5rem", marginBottom: "3rem", fontFamily: "'Baskervville', serif" }}>
+      <h2 style={{ fontSize: "2.5rem", marginBottom: "3rem", fontFamily: "'Baskervville', serif" }} onClick={() => navigate("/shop-by-category")}>
         Shop by Category
       </h2>
 
@@ -263,11 +279,11 @@ const Home = () => {
                 <img
                   alt={category.title}
                   src={category.image}
-                  style={{ height: "400px", objectFit: "cover", border: "none" }} 
+                  style={{ height: "400px", objectFit: "cover", border: "none", cursor:"pointer" }} onClick={() => navigate(category.path)} 
                 />
               }
             >
-              <h3 style={{ fontSize: "1.5rem", marginTop: "1rem", fontFamily: "'Baskervville', serif" }}>
+              <h3 style={{ fontSize: "1.5rem", marginTop: "1rem", fontFamily: "'Baskervville', serif", cursor:"pointer" }} onClick={() => navigate(category.path)} >
                 {category.title}
               </h3>
             </Card>
@@ -295,12 +311,12 @@ const Home = () => {
                   />
                 }
               >
-                <h3 style={{ fontSize: "1.7rem", marginBottom: "1.6rem", marginTop: "1.6rem", fontFamily: "'Baskervville', serif" }}>
+                <h3 style={{ fontSize: "1.7rem", marginBottom: "1.6rem", marginTop: "1.6rem", fontFamily: "'Baskervville', serif", cursor: "pointer"}} onClick={() => navigate("/world")}>
                   {news.title}
                 </h3>
 
                 <p style={{fontSize: "1.1rem", textAlign: "justify" }}>{news.description}</p>
-                <Button type="text" style={{fontSize: "1.1rem",color: "black",fontWeight: 400,textDecoration: "underline", textUnderlineOffset: "5px", padding: 0,cursor: "pointer", display: "block", textAlign: "left", background: "transparent", marginBottom: "2.5rem"}}  onMouseEnter={e => {e.currentTarget.style.color = "#555"; e.currentTarget.style.background = "transparent"; }} onMouseLeave={e => {e.currentTarget.style.color = "black"; e.currentTarget.style.background = "transparent"; }}>
+                <Button type="text" style={{fontSize: "1.1rem",color: "black",fontWeight: 400,textDecoration: "underline", textUnderlineOffset: "5px", padding: 0,cursor: "pointer", display: "block", textAlign: "left", background: "transparent", marginBottom: "2.5rem"}}  onMouseEnter={e => {e.currentTarget.style.color = "#555"; e.currentTarget.style.background = "transparent"; }} onMouseLeave={e => {e.currentTarget.style.color = "black"; e.currentTarget.style.background = "transparent"; }}  onClick={() => navigate("/world")}>
                   {news.buttonText}
                 </Button>
               </Card>

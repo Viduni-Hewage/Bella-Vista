@@ -10,18 +10,18 @@ const WebHeader = ({ visible }) => {
 
   const handleMenuClick = (e) => {
     switch (e.key) {
-      // case "jewelry":
-      //   navigate("/jewelry");
-      //   break;
-      // case "watches":
-      //   navigate("/watches");
-      //   break;
-      // case "decorations":
-      //   navigate("/decorations");
-      //   break;
-      // case "accessories":
-      //   navigate("/accessories");
-      //   break;
+      case "jewelry":
+         navigate("/shop-by-category/jewelry");
+         break;
+      case "watches":
+         navigate("/shop-by-category/watches");
+         break;
+      case "decorations":
+         navigate("/shop-by-category/decorations");
+         break;
+      case "accessories":
+         navigate("/shop-by-category/accessories");
+         break;
       case "news":
         navigate("/news");
         break;
@@ -53,7 +53,7 @@ const WebHeader = ({ visible }) => {
         zIndex: 1000,
       }}
     >
-      <div style={{ fontSize: "2rem", fontWeight: "bold", fontFamily: "'Baskervville', serif", color: "#9b3803ff"}}  onClick={() => navigate("/")}>Bellavista</div>
+      <div style={{ fontSize: "2rem", fontWeight: "bold", fontFamily: "'Baskervville', serif", color: "#9b3803ff", cursor: "pointer"}}  onClick={() => navigate("/")}>Bellavista</div>
 
       <Menu
         mode="horizontal"
@@ -75,7 +75,7 @@ const WebHeader = ({ visible }) => {
             <UserOutlined style={{  fontSize: "20px", marginRight: "6px" }} /> Login
         </span>
         <span style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
-            <ShoppingCartOutlined style={{ fontSize: "20px", marginRight: "6px" }} />
+            <ShoppingCartOutlined style={{ fontSize: "20px", marginRight: "6px" }} onClick={() => navigate("/cart")}/>
         </span>
       </div>
 
