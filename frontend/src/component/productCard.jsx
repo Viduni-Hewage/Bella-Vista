@@ -1,4 +1,3 @@
-// src/component/productCard.jsx
 import React, { useState } from "react";
 import { Card, Badge } from "antd";
 import { HeartOutlined, HeartFilled, ShoppingCartOutlined } from "@ant-design/icons";
@@ -17,7 +16,7 @@ const ProductCard = ({ product, onClick }) => {
           style={{
             objectFit: "cover",
             width: "100%",
-            aspectRatio: "1 / 1",
+            height: "40vh",
             borderRadius: 0,
             cursor: "pointer",
           }}
@@ -48,7 +47,9 @@ const ProductCard = ({ product, onClick }) => {
       {product.isNew && <Badge.Ribbon text="New" color="red" />}
       <h3 style={{ fontSize: "1.2rem", marginBottom: "0.5rem" }}>{product.title}</h3>
       <p style={{ fontSize: "0.95rem", color: "#555", marginBottom: "0.5rem" }}>
-        {product.description}
+        {product.description.length > 60
+    ? product.description.substring(0, 60) + "…"
+    : product.description}
       </p>
       <p style={{ fontWeight: "bold", marginBottom: "-1rem" }}>${product.price || "0.00"}</p>
     </Card>
