@@ -1,43 +1,33 @@
-const Product = require('../models/Product');
+const productService = require('../services/productService');
 
-const getProducts = async (req, res) => {
+const getAllProducts = async (req, res, next) => {
   try {
-    const products = await Product.find();
+    const products = await productService.getAllProducts();
     res.status(200).json(products);
   } catch (err) {
-    res.status(500).json({ message: 'Server Error', error: err.message });
+    next(err);
   }
 };
 
-const getProductById = async (req, res) => {
+const getProductById = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
+    const product = await productService.getProductById(req.params.id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
     res.status(200).json(product);
   } catch (err) {
-    res.status(500).json({ message: 'Server Error', error: err.message });
+    next(err);
   }
 };
 
-const getProductsByCategory = async (req, res) => {
+const getProductsByCategory = async (req, res, next) => {
   try {
-    const { category } = req.params;
-    const products = await Product.find({ category: category });
-    
-    if (products.length === 0) {
-      return res.status(404).json({ message: 'No products found for this category' });
-    }
-
+    const products = await productService.getProductsByCategory(req.params.category);
+    if (products.length === 0) return res.status(404).json({ message: 'No products found' });
     res.status(200).json(products);
   } catch (err) {
-    res.status(500).json({ message: 'Server Error', error: err.message });
+    next(err);
   }
 };
 
-module.exports = {
-  getProducts,
-  getProductById,
-  getProductsByCategory
-};
+module.exports = { getAllProducts, getProductById, getProductsByCategory };
+
