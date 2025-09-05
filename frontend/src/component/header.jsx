@@ -1,12 +1,14 @@
 import React from "react";
-import { Layout, Menu } from "antd";
+import { Layout, Menu, Badge } from "antd";
 import { UserOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/useCart";
 
 const { Header } = Layout;
 
 const WebHeader = ({ visible }) => {
   const navigate = useNavigate();
+  const { getCartCount } = useCart();
 
   const handleMenuClick = (e) => {
     switch (e.key) {
@@ -69,13 +71,30 @@ const WebHeader = ({ visible }) => {
       </Menu>
 
       <div style={{ fontSize: "1rem", display: "flex", alignItems: "center" }}>
+
         <span style={{ marginRight: "20px", cursor: "pointer", display: "flex", alignItems: "center" }}
         onClick={() => navigate("/login")}
         >
             <UserOutlined style={{  fontSize: "20px", marginRight: "6px" }} /> Login
         </span>
-        <span style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
-            <ShoppingCartOutlined style={{ fontSize: "20px", marginRight: "6px" }} onClick={() => navigate("/cart")}/>
+
+        <span style={{cursor: "pointer", display: "flex", alignItems: "center"}}
+          onClick={() => navigate("/cart")}
+        >
+          <Badge
+            count={getCartCount()} 
+            offset={[0, 0]}
+            style={{
+              backgroundColor: "#f5222d", 
+              fontSize: "0.75rem",
+              minWidth: "18px",
+              height: "18px",
+              lineHeight: "18px",
+              borderRadius: "50%",
+            }}
+          >
+            <ShoppingCartOutlined style={{ fontSize: "20px" }} />
+          </Badge>
         </span>
       </div>
 
