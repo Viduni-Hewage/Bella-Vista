@@ -52,10 +52,14 @@ const ProductCard = ({ product, onClick }) => {
         </div>,
         <div
           key="cart"
-          onClick={handleAddToCart}
+          onClick={product.inStock ? handleAddToCart : null}
           style={{
-            cursor: "pointer",
-            color: isProductInCart ? "green" : "inherit"
+            cursor: product.inStock ? "pointer" : "not-allowed",
+            color: !product.inStock
+              ? "#ccc"
+              : isProductInCart
+              ? "green"
+              : "inherit",
           }}
         >
           {isProductInCart ? (
@@ -78,7 +82,17 @@ const ProductCard = ({ product, onClick }) => {
           : product.description || "No description available"}
       </p>
       <p style={{ fontWeight: "bold", marginBottom: "-1rem" }}>
-        ${product.price || "0.00"}
+        ${product.price?.toFixed(2)}{" "}
+        <span
+          style={{
+            fontWeight: "normal",
+            fontSize: "0.85rem",
+            color: product.inStock ? "#28a745" : "#dc3545",
+            marginLeft: "0.3rem",
+          }}
+        >
+          ({product.inStock ? "In Stock" : "Out of Stock"})
+        </span>
       </p>
     </Card>
   );

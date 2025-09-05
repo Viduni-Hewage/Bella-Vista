@@ -302,20 +302,25 @@ const ProductDetail = () => {
 
               <button
                 onClick={handleAddToCart}
+                disabled={!product.inStock}
                 style={{
                   width: "100%",
                   padding: "15px",
-                  background: "#9b3803ff",
+                  background: product.inStock ? "#9b3803ff" : "#ccc",
                   color: "white",
                   border: "none",
                   borderRadius: "8px",
                   fontSize: "1.1rem",
                   fontWeight: "600",
-                  cursor: "pointer",
+                  cursor: product.inStock ? "pointer" : "not-allowed",
                   transition: "background-color 0.3s ease",
                 }}
-                onMouseOver={(e) => (e.target.style.background = "#7d2d02")}
-                onMouseOut={(e) => (e.target.style.background = "#9b3803ff")}
+                onMouseOver={(e) => {
+                  if (product.inStock) e.target.style.background = "#7d2d02";
+                }}
+                onMouseOut={(e) => {
+                  if (product.inStock) e.target.style.background = "#9b3803ff";
+                }}
               >
                 {isProductInCart 
                   ? `Add More to Cart - $${(product.price * quantity).toFixed(2)}`
