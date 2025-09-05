@@ -35,8 +35,14 @@ const CartPage = () => {
       return;
     }
 
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login", { state: { fromCart: true, paymentMethod } });
+      return;
+    }
+
     if (paymentMethod === "cod") {
-      navigate("/success-transaction");
+      navigate("/cod-payment");
     } else if (paymentMethod === "card") {
       navigate("/card-payment");
     } else {
@@ -46,7 +52,6 @@ const CartPage = () => {
 
   return (
     <div>
-      {/* Header */}
       <div>
         <div
           style={{
@@ -89,7 +94,6 @@ const CartPage = () => {
         </div>
       </div>
 
-      {/* Banner */}
       <div
         style={{
           width: "100%",
@@ -105,7 +109,6 @@ const CartPage = () => {
         Shopping Cart
       </div>
 
-      {/* Main content */}
       <div
         style={{
           display: "flex",
@@ -116,7 +119,6 @@ const CartPage = () => {
           alignItems: "flex-start",
         }}
       >
-        {/* Cart items */}
         <div
           style={{
             flexBasis: window.innerWidth <= 960 ? "100%" : "70%",
@@ -143,7 +145,6 @@ const CartPage = () => {
           )}
         </div>
 
-        {/* Order summary (only selected items) */}
         <div
           style={{
             flexBasis: window.innerWidth <= 960 ? "100%" : "30%",
@@ -167,7 +168,6 @@ const CartPage = () => {
 
           <hr style={{ margin: "0rem 2rem" }} />
 
-          {/* Payment options */}
           <div style={{ padding: "1rem 2rem", marginBottom: "1.2rem" }}>
             <p style={{ fontWeight: "400", marginBottom: "0.5rem" }}>Payment Method</p>
 

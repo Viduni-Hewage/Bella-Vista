@@ -30,7 +30,7 @@ const Login = () => {
 
         if (location.state?.fromCart) {
         if (location.state.paymentMethod === "cod") {
-            navigate("/success-transaction");
+            navigate("/cod-payment");
         } else if (location.state.paymentMethod === "card") {
             navigate("/card-payment");
         } else {

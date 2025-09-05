@@ -76,6 +76,12 @@ const CartProvider = ({ children }) => {
 
   const isInCart = (productId) => cartItems.some((item) => item._id === productId);
 
+  const getSelectedSubTotal = () =>
+  cartItems
+    .filter((item) => item.selected)
+    .reduce((sum, item) => sum + item.price * item.qty, 0)
+    .toFixed(2);
+
   return (
     <CartContext.Provider
       value={{
@@ -87,6 +93,7 @@ const CartProvider = ({ children }) => {
         clearCart,
         getCartCount,
         getCartSubTotal,
+        getSelectedSubTotal,
         isInCart,
       }}
     >
