@@ -98,7 +98,8 @@ const Accessories = () => {
               <Col xs={24} sm={12} md={6} key={product._id}>
                 <ProductCard
                   product={product}
-                  onClick={() => console.log("Clicked", product.title)}
+                  onClick={() => navigate(`/product/${product._id}`, { state: { product } })
+                  }
                 />
               </Col>
             ))}

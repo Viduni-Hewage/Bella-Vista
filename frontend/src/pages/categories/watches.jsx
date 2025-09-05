@@ -83,7 +83,8 @@ const Watches = () => {
               <Col xs={24} sm={12} md={6} key={index}>
                 <ProductCard
                   product={product}
-                  onClick={() => console.log("Clicked", product.title)}
+                  onClick={() => navigate(`/product/${product._id}`, { state: { product } })
+                  }
                 />
               </Col>
             ))}

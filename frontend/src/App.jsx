@@ -15,6 +15,7 @@ import Accessories from './pages/categories/accessories';
 import Decorations from './pages/categories/decorations';
 import CartPage from './pages/cart';
 import CardPayment from './pages/cardPayment';
+import ProductDetail from './component/productDetail';
 
 const App = () => {
   return (
@@ -42,6 +43,7 @@ const App = () => {
           <Route path="news" element={<News />} />
           <Route path="success-transaction" element={<SuccessTransaction />} />
           <Route path="card-payment" element={<CardPayment />} />
+          <Route path="product/:id" element={<ProductDetail />} />
         
         </Route>
       </Routes>
