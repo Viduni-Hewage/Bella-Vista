@@ -1,10 +1,13 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import WebHeader from "../component/header";
 import WebFooter from '../component/footer';
 import { useState, useEffect } from 'react';
 
 const Layout = () => {
   const [showHeader, setShowHeader] = useState(false);
+  const location = useLocation();
+
+  const hideHeaderRoutes = ["/card-payment", "/cod-payment", "/success-transaction"];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,11 +19,13 @@ const Layout = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const shouldHideHeader = hideHeaderRoutes.includes(location.pathname);
+
   return (
     <div>
-      <WebHeader visible={showHeader} />
-      <main> 
-        <Outlet /> 
+      {!shouldHideHeader && <WebHeader visible={showHeader} />}
+      <main>
+        <Outlet />
       </main>
       <WebFooter />
     </div>
