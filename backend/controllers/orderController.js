@@ -1,69 +1,105 @@
-const Order = require('../models/Order');
-const Cart = require('../models/Cart');
+const jwt = require('jsonwebtoken');
+const orderService = require('../services/orderService');
 
-const placeOrder = async (req, res) => {
+const createCODOrderController = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const { paymentMethod, paymentStatus } = req.body;
-
-    const cart = await Cart.findOne({ userId }).populate('items.productId');
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ message: 'Cart is empty' });
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Unauthorized: No token provided' });
     }
 
-    const totalAmount = cart.items.reduce((acc, item) => {
-      return acc + item.productId.price * item.quantity;
-    }, 0);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id;
 
-    const newOrder = new Order({
+    const { nic, phone, address, totalAmount } = req.body;
+
+    if (!nic || !phone || !address || !totalAmount) {
+      return res.status(400).json({ success: false, message: 'All fields are required' });
+    }
+
+    const order = await orderService.createCODOrder({
       userId,
-      products: cart.items.map(item => ({
-        productId: item.productId._id,
-        quantity: item.quantity
-      })),
+      nic,
+      phone,
+      address,
       totalAmount,
-      paymentMethod, 
-      paymentStatus: paymentStatus || (paymentMethod === 'COD' ? 'Pending' : 'Paid'),
-      status: 'Pending'
+      paymentMethod: 'COD',
     });
-
-    await newOrder.save();
-
-    cart.items = [];
-    await cart.save();
 
     res.status(201).json({
-      message: 'Order placed successfully',
-      order: newOrder
+      success: true,
+      message: 'Order created successfully',
+      orderId: order._id,
     });
-  } catch (err) {
-    res.status(500).json({ message: 'Server Error', error: err.message });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ success: false, message: error.message });
   }
 };
 
-const getMyOrders = async (req, res) => {
-  try {
-    const orders = await Order.find({ userId: req.user.id }).populate('products.productId');
-    res.status(200).json(orders);
-  } catch (err) {
-    res.status(500).json({ message: 'Server Error', error: err.message });
-  }
-};
 
-const getOrderById = async (req, res) => {
+const createCardOrderController = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate('products.productId');
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Unauthorized: No token provided' });
     }
-    res.status(200).json(order);
-  } catch (err) {
-    res.status(500).json({ message: 'Server Error', error: err.message });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id;
+
+    const { nic, phone, address, totalAmount, cardDetails } = req.body;
+
+    if (!nic || !phone || !address || !totalAmount || !cardDetails) {
+      return res.status(400).json({ success: false, message: 'All fields are required' });
+    }
+
+    if (!cardDetails.type || !cardDetails.lastFourDigits || !cardDetails.nameOnCard) {
+      return res.status(400).json({ success: false, message: 'Complete card details are required' });
+    }
+
+    const order = await orderService.createCardOrder({
+      userId,
+      nic,
+      phone,
+      address,
+      totalAmount,
+      paymentMethod: 'Card',
+      cardDetails: {
+        type: cardDetails.type,
+        lastFourDigits: cardDetails.lastFourDigits,
+        nameOnCard: cardDetails.nameOnCard,
+      }
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Card payment processed successfully',
+      orderId: order._id,
+      order: {
+        id: order._id,
+        totalAmount: order.totalAmount,
+        status: order.status,
+        paymentMethod: order.paymentMethod,
+        createdAt: order.createdAt,
+      }
+    });
+  } catch (error) {
+    console.error('Card order creation error:', error);
+    
+    if (error.message.includes('Unauthorized') || error.message.includes('Invalid token')) {
+      return res.status(401).json({ success: false, message: error.message });
+    }
+    
+    if (error.message.includes('required')) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+
+    res.status(500).json({ success: false, message: 'Payment processing failed' });
   }
 };
 
 module.exports = {
-  placeOrder,
-  getMyOrders,
-  getOrderById
+  createCODOrderController,
+  createCardOrderController,
 };
+

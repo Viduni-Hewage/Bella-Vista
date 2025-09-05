@@ -5,6 +5,7 @@ import visaImg from "../assets/cardPayment/visa.svg";
 import masterImg from "../assets/cardPayment/mastercard.svg";
 import cartBg1 from "../assets/cardPayment/cardbg1.png";
 import { useCart } from "../context/useCart";
+import axios from "axios";
 
 const CardPaymentPage = () => {
   const navigate = useNavigate();
@@ -50,6 +51,15 @@ const CardPaymentPage = () => {
       newValue = value.replace(/\D/g, "").slice(0, 16);
       newValue = newValue.replace(/(\d{4})/g, "$1 ").trim();
     }
+    if (field === "expiry") {
+      newValue = value.replace(/\D/g, "").slice(0, 4);
+      if (newValue.length >= 2) {
+        newValue = newValue.slice(0, 2) + "/" + newValue.slice(2);
+      }
+    }
+    if (field === "cvv") {
+      newValue = value.replace(/\D/g, "").slice(0, 3);
+    }
     setCard({ ...card, [field]: newValue });
     setCardErrors({ ...cardErrors, [field]: "" });
   };
@@ -71,12 +81,54 @@ const CardPaymentPage = () => {
     return errs;
   };
 
-  const handleConfirmPayment = () => {
-    const newErrors = validateCard();
-    setCardErrors(newErrors);
-    const hasErrors = Object.values(newErrors).some((msg) => msg !== "");
-    if (hasErrors) return;
-    navigate("/success-transaction");
+  const handleConfirmPayment = async () => {
+    const cardValidationErrors = validateCard();
+    setCardErrors(cardValidationErrors);
+    const hasCardErrors = Object.values(cardValidationErrors).some((msg) => msg !== "");
+    if (hasCardErrors) return;
+
+    const token = localStorage.getItem("token");
+    const subtotal = getSelectedSubTotal();
+
+    if (!token) {
+      alert("Please login first!");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/orders/card",
+        {
+          totalAmount: subtotal,
+          nic: userDetails.nic,
+          phone: userDetails.phone,
+          address: userDetails.address,
+          cardDetails: {
+            type: card.type,
+            lastFourDigits: card.number.replace(/\s/g, "").slice(-4),
+            nameOnCard: card.name,
+            // Don't send full card number, expiry, or CVV to backend for security
+          }
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.data.success) {
+        alert("Payment successful!");
+        navigate("/success-transaction");
+      } else {
+        alert(res.data.message);
+      }
+    } catch (err) {
+      console.error("Payment error:", err);
+      alert("Payment failed. Please try again.");
+    }
   };
 
   const handleMenuClick = (e) => {
@@ -122,7 +174,7 @@ const CardPaymentPage = () => {
           background: "#fff",
           margin: "0 auto 2rem auto"
         }}>
-          Subtotal: &nbsp;${getSelectedSubTotal()}
+          Subtotal:&nbsp;&nbsp;&nbsp;&nbsp;${getSelectedSubTotal()}
         </div>
 
         <div style={{ 
@@ -187,6 +239,7 @@ const CardPaymentPage = () => {
                     onChange={(e) => handleUserChange("address", e.target.value)} 
                     rows={3} 
                     style={{ ...inputStyle, resize: "none" }} 
+                    placeholder="Enter your address"
                   />
                   {userErrors.address && <p style={errorStyle}>{userErrors.address}</p>}
                 </div>

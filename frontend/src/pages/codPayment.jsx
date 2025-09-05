@@ -4,10 +4,49 @@ import { Menu } from "antd";
 import cartBg1 from "../assets/cardPayment/cardbg1.png";
 import { useCart } from "../context/useCart";
 import UserDetails from "../component/userDetails";
+import axios from "axios";
 
 const CodPayment = () => {
   const navigate = useNavigate();
   const { getSelectedSubTotal } = useCart();
+
+  const handleConfirmOrder = async (userDetails) => {
+  const token = localStorage.getItem("token");
+  const subtotal = getSelectedSubTotal();
+
+  if (!token) {
+    alert("Please login first!");
+    navigate("/login");
+    return;
+  }
+
+  try {
+    const res = await axios.post(
+      "http://localhost:5000/api/orders/cod",
+      { 
+        totalAmount: subtotal,
+        nic: userDetails.nic,
+        phone: userDetails.phone,
+        address: userDetails.address
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (res.data.success) {
+      navigate("/success-transaction");
+    } else {
+      alert(res.data.message);
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong");
+  }
+};
 
 
   const handleMenuClick = (e) => {
@@ -56,14 +95,10 @@ const CodPayment = () => {
           Subtotal: &nbsp;${getSelectedSubTotal()}
         </div>
 
-        <UserDetails />
-
-        
+        <UserDetails onConfirmOrder={handleConfirmOrder} />        
         
           </div>
-        </div>
-    
-   
+        </div>   
   );
 };
 

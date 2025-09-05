@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const UserDetails = () => {
+const UserDetails = ({ onConfirmOrder }) => { 
 
   const [user, setUser] = useState({ nic: "", phone: "", address: "" });
   const [errors, setErrors] = useState({ nic: "", phone: "", address: "" });
@@ -58,11 +58,9 @@ const UserDetails = () => {
     return isValid;
   };
 
-  const handleUserDetailsConfirm = () => {
+  const handleConfirmClick = () => {
     if (validate()) {
-      console.log("User Details:", user);
-      alert("User details confirmed!");
-      // You can also save to context or navigate to next page
+      onConfirmOrder(user); 
     }
   };
 
@@ -131,7 +129,7 @@ const UserDetails = () => {
         </div>
 
         <button
-          onClick={handleUserDetailsConfirm}
+          onClick={handleConfirmClick}
           style={{
             padding: "12px",
             background: "#9b3803ff",
