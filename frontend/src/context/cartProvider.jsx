@@ -1,8 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CartContext } from "./cartContext";
+
+const CART_KEY = "cartData";
+const EXPIRY_DAYS = 30;
 
 const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(CART_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      const now = new Date().getTime();
+      if (now - parsed.timestamp < EXPIRY_DAYS * 24 * 60 * 60 * 1000) {
+        setCartItems(parsed.items);
+      } else {
+        localStorage.removeItem(CART_KEY);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      localStorage.setItem(
+        CART_KEY,
+        JSON.stringify({ items: cartItems, timestamp: new Date().getTime() })
+      );
+    } else {
+      localStorage.removeItem(CART_KEY);
+    }
+  }, [cartItems]);
 
   const addToCart = (product, qty = 1) => {
     const exist = cartItems.find((item) => item._id === product._id);
@@ -31,9 +58,7 @@ const CartProvider = ({ children }) => {
     }
   };
 
-  const clearCart = () => {
-    setCartItems([]);
-  };
+  const clearCart = () => setCartItems([]);
 
   const getCartCount = () =>
     cartItems.reduce((sum, item) => sum + Number(item.qty), 0);
@@ -41,8 +66,7 @@ const CartProvider = ({ children }) => {
   const getCartSubTotal = () =>
     cartItems.reduce((sum, item) => sum + item.price * item.qty, 0).toFixed(2);
 
-  const isInCart = (productId) =>
-    cartItems.some((item) => item._id === productId);
+  const isInCart = (productId) => cartItems.some((item) => item._id === productId);
 
   return (
     <CartContext.Provider
