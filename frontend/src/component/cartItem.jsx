@@ -1,4 +1,5 @@
 import { FaTrash } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const CartItem = ({ item, qtyChangeHandler, removeHandler }) => {
   return (
@@ -13,7 +14,7 @@ const CartItem = ({ item, qtyChangeHandler, removeHandler }) => {
         margin: "2rem",
       }}
     >
-      <div style={{ flex: "0 0 80px", marginRight: "1rem" }}>
+      <Link to={`/product/${item._id}`} style={{ flex: "0 0 80px", marginRight: "1rem" }}>
         <img
           src={item.image}
           alt={item.title}
@@ -25,10 +26,12 @@ const CartItem = ({ item, qtyChangeHandler, removeHandler }) => {
             border: "1px solid #ccc",
           }}
         />
-      </div>
+      </Link>
 
       <div style={{ flex: 1 }}>
-        <h4 style={{ margin: 0, fontSize: "1.1rem" }}>{item.title}</h4>
+        <Link to={`/product/${item._id}`} style={{ textDecoration: "none", color: "black" }}>
+          <h4 style={{ margin: 0, fontSize: "1.1rem" }}>{item.title}</h4>
+        </Link>
         <p style={{ margin: "5px 0 0 0" }}>${item.price}</p>
       </div>
 
@@ -50,3 +53,4 @@ const CartItem = ({ item, qtyChangeHandler, removeHandler }) => {
 };
 
 export default CartItem;
+
