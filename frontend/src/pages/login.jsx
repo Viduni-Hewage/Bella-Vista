@@ -2,17 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Button, Form, Input } from "antd";
 import WebHeader from "../component/header";
 import WebFooter from "../component/footer";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
+import { message } from "antd";
 
-const onFinish = (values) => {
-  console.log("Success:", values);
-};
 const onFinishFailed = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
 
 const Login = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [showHeader, setShowHeader] = useState(false);
     
     useEffect(() => {
@@ -24,6 +24,35 @@ const Login = () => {
     window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
+
+     const handleLoginSuccess = (token) => {
+        localStorage.setItem("token", token);
+
+        if (location.state?.fromCart) {
+        if (location.state.paymentMethod === "cod") {
+            navigate("/success-transaction");
+        } else if (location.state.paymentMethod === "card") {
+            navigate("/card-payment");
+        } else {
+            navigate("/cart");
+        }
+        } else {
+        navigate("/");
+        }
+    };
+
+    const onFinish = async (values) => {
+        const { email, password } = values;
+
+        try {
+        const res = await axios.post("http://localhost:5000/api/auth/login", { email, password });
+        message.success(res.data.message || "Login successful");
+
+        handleLoginSuccess(res.data.token);
+        } catch (err) {
+        message.error(err.response?.data?.message || "Login failed");
+        }
+    };
 
     return(
         <div>

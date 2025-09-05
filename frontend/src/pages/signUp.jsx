@@ -3,12 +3,11 @@ import { Button, Form, Input } from "antd";
 import WebHeader from "../component/header";
 import WebFooter from "../component/footer";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { message } from "antd";
 
-const onFinish = (values) => {
-  console.log("Success:", values);
-};
-const onFinishFailed = (errorInfo) => {
-  console.log("Failed:", errorInfo);
+const onFinishFailed = (errorInfo) => { 
+    console.log("Failed:", errorInfo); 
 };
 
 const SignUp = () => {
@@ -24,6 +23,55 @@ const SignUp = () => {
     window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
+
+    
+    const onFinish = async (values) => {
+        console.log("Raw form values:", values); // Debug: see all form data
+        
+        const { name, email, password } = values;
+
+        console.log("Extracted values:", { name, email, password }); // Debug log
+        console.log("Data types:", { 
+            nameType: typeof name, 
+            emailType: typeof email, 
+            passwordType: typeof password 
+        });
+
+        // Validate data before sending
+        if (!email || !password) {
+            console.error("Missing required fields:", { email: !!email, password: !!password });
+            message.error("Please fill all required fields");
+            return;
+        }
+
+        const requestData = { name, email, password };
+        console.log("Request data to send:", requestData); // Debug log
+
+        try {
+            console.log("Making API call to:", "http://localhost:5000/api/auth/register"); // Debug log
+            
+            const res = await axios.post("http://localhost:5000/api/auth/register", requestData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            console.log("API Response:", res.data); // Debug log
+
+            message.success(res.data.message || "User registered successfully");
+
+            // Redirect to login page after successful registration
+            navigate("/login");
+        } catch (err) {
+            console.error("Full error object:", err); // Debug log
+            console.error("Error response:", err.response); // Debug log
+            console.error("Error response data:", err.response?.data); // Debug log
+            console.error("Error status:", err.response?.status); // Debug log
+            
+            const errorMessage = err.response?.data?.message || "Registration failed";
+            message.error(errorMessage);
+        }
+    };
 
     return(
         <div>
@@ -154,6 +202,25 @@ const SignUp = () => {
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
                 >
+                    <Form.Item
+                    style={{ marginBottom: "1.5rem" }}
+                    name="name"
+                    rules={[
+                        { required: true, message: "* Please enter the name" },
+                        { type: "string", message: "* Please enter a valid name" },
+                    ]}
+                    >
+                    <Input
+                        placeholder="Username"
+                        style={{
+                        width: "100%",
+                        fontSize: "1rem",
+                        padding: "0.5rem",
+                        color: "#000",
+                        borderRadius: "0",
+                        }}
+                    />
+                    </Form.Item>
                     <Form.Item
                     style={{ marginBottom: "1.5rem" }}
                     name="email"
