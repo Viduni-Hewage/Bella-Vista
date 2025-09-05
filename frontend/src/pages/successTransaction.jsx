@@ -1,10 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import successGif from "../assets/success.png"; 
 
 const SuccessTransaction = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    window.history.pushState(null, document.title, window.location.href);
+    window.addEventListener("popstate", onBackButtonEvent);
+
+    return () => {
+      window.removeEventListener("popstate", onBackButtonEvent);
+    };
+  }, []);
+
+  const onBackButtonEvent = (e) => {
+    e.preventDefault();
+    navigate("/", { replace: true });
+  };
 
   return (
     <div
