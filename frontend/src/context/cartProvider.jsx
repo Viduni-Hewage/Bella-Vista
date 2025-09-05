@@ -58,6 +58,14 @@ const CartProvider = ({ children }) => {
     }
   };
 
+  const toggleSelect = (id) => {
+    setCartItems(
+      cartItems.map((item) =>
+        item._id === id ? { ...item, selected: !item.selected } : item
+      )
+    );
+  };
+
   const clearCart = () => setCartItems([]);
 
   const getCartCount = () =>
@@ -75,6 +83,7 @@ const CartProvider = ({ children }) => {
         addToCart,
         removeFromCart,
         updateQuantity,
+        toggleSelect,
         clearCart,
         getCartCount,
         getCartSubTotal,

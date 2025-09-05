@@ -1,21 +1,21 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CartItem from "../component/cartItem";
-import { useNavigate } from "react-router-dom";
 import { Menu } from "antd";
 import { useCart } from "../context/useCart";
 
 const CartPage = () => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const navigate = useNavigate();
-  
-  const { 
-    cartItems, 
-    updateQuantity, 
-    removeFromCart, 
-    getCartCount, 
-    getCartSubTotal 
-  } = useCart();
+
+  const { cartItems, updateQuantity, removeFromCart, toggleSelect } = useCart();
+
+  const selectedItems = cartItems.filter((item) => item.selected);
+
+  const totalCount = selectedItems.reduce((sum, item) => sum + Number(item.qty), 0);
+  const subTotal = selectedItems
+    .reduce((sum, item) => sum + item.price * item.qty, 0)
+    .toFixed(2);
 
   const qtyChangeHandler = (id, qty) => {
     updateQuantity(id, qty);
@@ -30,6 +30,11 @@ const CartPage = () => {
   };
 
   const handleProceedBtn = () => {
+    if (selectedItems.length === 0) {
+      alert("Please select at least one product to purchase!");
+      return;
+    }
+
     if (paymentMethod === "cod") {
       navigate("/success-transaction");
     } else if (paymentMethod === "card") {
@@ -41,13 +46,14 @@ const CartPage = () => {
 
   return (
     <div>
+      {/* Header */}
       <div>
         <div
           style={{
             width: "100%",
             background: "#fcf3eeff",
             padding: "1rem 40px 0 0",
-            boxShadow: "0 2px 8px #f0f1f2"
+            boxShadow: "0 2px 8px #f0f1f2",
           }}
         >
           <div
@@ -58,7 +64,7 @@ const CartPage = () => {
               color: "#9b3803ff",
               cursor: "pointer",
               textAlign: "center",
-              marginBottom: "0.5rem"
+              marginBottom: "0.5rem",
             }}
             onClick={() => navigate("/")}
           >
@@ -71,7 +77,7 @@ const CartPage = () => {
               justifyContent: "center",
               fontSize: "1rem",
               background: "transparent",
-              gap: "3rem"
+              gap: "3rem",
             }}
             onClick={handleMenuClick}
           >
@@ -83,6 +89,7 @@ const CartPage = () => {
         </div>
       </div>
 
+      {/* Banner */}
       <div
         style={{
           width: "100%",
@@ -92,12 +99,13 @@ const CartPage = () => {
           color: "white",
           fontSize: "2.5rem",
           fontWeight: "bold",
-          fontFamily: "'Baskervville', serif"
+          fontFamily: "'Baskervville', serif",
         }}
       >
         Shopping Cart
       </div>
 
+      {/* Main content */}
       <div
         style={{
           display: "flex",
@@ -105,13 +113,14 @@ const CartPage = () => {
           margin: "3rem auto",
           gap: "2rem",
           flexDirection: window.innerWidth <= 960 ? "column" : "row",
-          alignItems: "flex-start"
+          alignItems: "flex-start",
         }}
       >
+        {/* Cart items */}
         <div
           style={{
             flexBasis: window.innerWidth <= 960 ? "100%" : "70%",
-            padding: "1rem"
+            padding: "1rem",
           }}
         >
           {cartItems.length === 0 ? (
@@ -128,11 +137,13 @@ const CartPage = () => {
                 item={item}
                 qtyChangeHandler={qtyChangeHandler}
                 removeHandler={() => removeFromCartHandler(item._id)}
+                toggleSelect={toggleSelect}
               />
             ))
           )}
         </div>
 
+        {/* Order summary (only selected items) */}
         <div
           style={{
             flexBasis: window.innerWidth <= 960 ? "100%" : "30%",
@@ -140,26 +151,25 @@ const CartPage = () => {
             boxShadow: "0 1px 4px rgba(0,0,0,0.4)",
             height: "fit-content",
             padding: "1rem",
-            marginTop: "3rem"
+            marginTop: "3rem",
           }}
         >
           <div
             style={{
               padding: "3rem 2rem 1rem 2rem",
               fontWeight: "400",
-              fontSize: "1.1rem"
+              fontSize: "1.1rem",
             }}
           >
-            <p>Total Items : {getCartCount()}</p>
-            <p>Sub Total : ${getCartSubTotal()}</p>
+            <p>Total Selected Items: {totalCount}</p>
+            <p>Selected Subtotal: ${subTotal}</p>
           </div>
 
           <hr style={{ margin: "0rem 2rem" }} />
 
+          {/* Payment options */}
           <div style={{ padding: "1rem 2rem", marginBottom: "1.2rem" }}>
-            <p style={{ fontWeight: "400", marginBottom: "0.5rem" }}>
-              Payment Method
-            </p>
+            <p style={{ fontWeight: "400", marginBottom: "0.5rem" }}>Payment Method</p>
 
             <div style={{ marginBottom: "0.5rem" }}>
               <input
@@ -197,7 +207,7 @@ const CartPage = () => {
                 background: "#171717",
                 color: "#f4f4f4",
                 border: "1px solid #171717",
-                cursor: "pointer"
+                cursor: "pointer",
               }}
             >
               Proceed To Checkout

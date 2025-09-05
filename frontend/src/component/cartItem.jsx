@@ -1,7 +1,7 @@
 import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const CartItem = ({ item, qtyChangeHandler, removeHandler }) => {
+const CartItem = ({ item, qtyChangeHandler, removeHandler, toggleSelect }) => {
   return (
     <div
       style={{
@@ -12,8 +12,17 @@ const CartItem = ({ item, qtyChangeHandler, removeHandler }) => {
         borderRadius: 9,
         padding: "1.5rem 2rem",
         margin: "2rem",
+        position: "relative",
       }}
     >
+      {/* Checkbox */}
+      <input
+        type="checkbox"
+        checked={item.selected || false}
+        onChange={() => toggleSelect(item._id)}
+        style={{ position: "absolute", top: "10px", left: "10px", transform: "scale(1.3)", }}
+      />
+
       <Link to={`/product/${item._id}`} style={{ flex: "0 0 80px", marginRight: "1rem" }}>
         <img
           src={item.image}
@@ -53,4 +62,3 @@ const CartItem = ({ item, qtyChangeHandler, removeHandler }) => {
 };
 
 export default CartItem;
-
