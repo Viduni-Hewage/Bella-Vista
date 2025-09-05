@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Menu } from "antd";
+import { Menu, message } from "antd";
 import axios from "axios";
+import { useCart } from "../context/useCart";
+import Swal from 'sweetalert2';
 
 const ProductDetail = () => {
   const navigate = useNavigate();
@@ -9,6 +11,8 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  const { addToCart, isInCart, cartItems } = useCart();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -17,6 +21,7 @@ const ProductDetail = () => {
         setProduct(data);
       } catch (error) {
         console.error("Error fetching product:", error);
+        message.error("Failed to load product details");
       } finally {
         setLoading(false);
       }
@@ -31,7 +36,24 @@ const ProductDetail = () => {
 
   const handleAddToCart = () => {
     if (product) {
-      console.log(`Added ${quantity} of ${product.name} to cart`);
+      try {
+        addToCart(product, quantity);
+     
+        ///alert("Added Successfully");
+        Swal.fire({
+          title: 'Success!',
+          text: 'Add product to cart successfully',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        });
+    
+        navigate("/shop-by-category");
+        
+      } catch (error) {
+        alert("Failed to add item to cart");
+        console.error("Add to cart error:", error);
+      }
     }
   };
 
@@ -43,6 +65,11 @@ const ProductDetail = () => {
     }
   };
 
+  const getCurrentCartQuantity = () => {
+    const cartItem = cartItems.find(item => item._id === product?._id);
+    return cartItem ? cartItem.qty : 0;
+  };
+
   if (loading) {
     return <div style={{ textAlign: "center", marginTop: "50px" }}>Loading...</div>;
   }
@@ -50,6 +77,9 @@ const ProductDetail = () => {
   if (!product) {
     return <div style={{ textAlign: "center", marginTop: "50px" }}>Product not found</div>;
   }
+
+  const isProductInCart = isInCart(product._id);
+  const currentCartQuantity = getCurrentCartQuantity();
 
   return (
     <div style={{ minHeight: "100vh" }}>
@@ -125,7 +155,7 @@ const ProductDetail = () => {
             >
               <img
                 src={product.image}
-                alt={product.name}
+                alt={product.title}
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </div>
@@ -198,6 +228,22 @@ const ProductDetail = () => {
                 ${product.price?.toFixed(2)}
               </div>
 
+              {isProductInCart && (
+                <div
+                  style={{
+                    background: "#e8f5e8",
+                    border: "1px solid #28a745",
+                    borderRadius: "6px",
+                    padding: "0.8rem",
+                    marginBottom: "1.5rem",
+                    textAlign: "center",
+                    color: "#155724",
+                  }}
+                >
+                  ✓ Already in cart (Quantity: {currentCartQuantity})
+                </div>
+              )}
+
               <div
                 style={{
                   display: "flex",
@@ -225,6 +271,7 @@ const ProductDetail = () => {
                       cursor: "pointer",
                       fontSize: "1.2rem",
                     }}
+                    disabled={quantity <= 1}
                   >
                     -
                   </button>
@@ -270,7 +317,10 @@ const ProductDetail = () => {
                 onMouseOver={(e) => (e.target.style.background = "#7d2d02")}
                 onMouseOut={(e) => (e.target.style.background = "#9b3803ff")}
               >
-                Add to Cart - ${(product.price * quantity).toFixed(2)}
+                {isProductInCart 
+                  ? `Add More to Cart - $${(product.price * quantity).toFixed(2)}`
+                  : `Add to Cart - $${(product.price * quantity).toFixed(2)}`
+                }
               </button>
 
               <div
