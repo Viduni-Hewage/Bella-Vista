@@ -33,7 +33,7 @@ const ProductCard = ({ product, onClick }) => {
           alt={product.title}
           src={product.image}
           style={{
-            objectFit: "cover",
+            objectFit: "contain",
             width: "100%",
             height: "40vh",
             borderRadius: 0,
