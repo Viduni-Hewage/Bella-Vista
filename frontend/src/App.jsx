@@ -21,6 +21,7 @@ import HistoryPage from './pages/history';
 import Auth0CallbackHandler from './component/auth0CallbackHandler';
 import ProfilePage from './pages/profile';
 import SummaryPage from './pages/orderSummary';
+import ProtectedRoute from './component/protectedRoute';
 
 const App = () => {
   return (
@@ -46,14 +47,14 @@ const App = () => {
           <Route path="cart" element={<CartPage />} />
           <Route path="world" element={<WorldOfBellaVista />} />
           <Route path="news" element={<News />} />
-          <Route path="success-transaction" element={<SuccessTransaction />} />
-          <Route path="card-payment" element={<CardPayment />} />
           <Route path="product/:id" element={<ProductDetail />} />
-          <Route path="cod-payment" element={<CodPayment />} />
           <Route path="purchase-history" element={<HistoryPage />} />
           <Route path="/callback" element={<Auth0CallbackHandler />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/order-summary" element={<SummaryPage />} />
+          <Route path="success-transaction" element={<ProtectedRoute><SuccessTransaction /></ProtectedRoute>} />
+          <Route path="card-payment" element={<ProtectedRoute><CardPayment /></ProtectedRoute>} />
+          <Route path="cod-payment" element={<ProtectedRoute><CodPayment /></ProtectedRoute>} />
+          <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="order-summary" element={<ProtectedRoute><SummaryPage /></ProtectedRoute>} />
         
         </Route>
       </Routes>
