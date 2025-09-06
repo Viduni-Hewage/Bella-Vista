@@ -15,18 +15,18 @@ const WorldOfBellaVista = () => {
     if (item === "World of BellaVista") {
       navigate("/world");
     }
-    // if (item === "Jewelry") {
-    //   navigate("/jewelry");
-    // }
-    // if (item === "Watches") {
-    //   navigate("/watches");
-    // }
-    // if (item === "Decorations") {
-    //   navigate("/decorations");
-    // }
-    // if (item === "Accessories") {
-    //   navigate("/accessories");
-    // }
+    if (item === "Jewelry") {
+      navigate("/shop-by-category/jewelry");
+    }
+    if (item === "Watches") {
+      navigate("/shop-by-category/watches");
+    }
+    if (item === "Decorations") {
+      navigate("/shop-by-category/decorations");
+    }
+    if (item === "Accessories") {
+      navigate("/shop-by-category/accessories");
+    }
     if (item === "News") {
        navigate("/news");
     }

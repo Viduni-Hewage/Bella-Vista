@@ -31,7 +31,7 @@ const ShopByCategory = () => {
           }}
           onClick={() => navigate("/")}
         >
-          Bellavista
+          Bella Vista
         </div>
 
         <Menu
