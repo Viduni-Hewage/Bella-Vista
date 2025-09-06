@@ -18,7 +18,9 @@ const Auth0CallbackHandler = () => {
         const fromCart = sessionStorage.getItem("fromCart");
         const paymentMethod = sessionStorage.getItem("pendingPaymentMethod");
 
-        if (fromCart === "true") {
+        const redirectTo = sessionStorage.getItem("redirectAfterLogin");
+
+        if (fromCart === "true" && paymentMethod) {
           sessionStorage.removeItem("fromCart");
           sessionStorage.removeItem("pendingPaymentMethod");
 
@@ -29,6 +31,9 @@ const Auth0CallbackHandler = () => {
           } else {
             navigate("/cart");
           }
+        } else if (redirectTo) {
+          sessionStorage.removeItem("redirectAfterLogin");
+          navigate(redirectTo);
         } else {
           navigate("/");
         }

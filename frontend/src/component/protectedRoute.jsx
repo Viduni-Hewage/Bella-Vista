@@ -1,14 +1,21 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Spin } from "antd";
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth0();
+  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
 
-  if (isLoading) return null;
+  if (isLoading) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "5rem" }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    loginWithRedirect();
+    return null; 
   }
 
   return children;
