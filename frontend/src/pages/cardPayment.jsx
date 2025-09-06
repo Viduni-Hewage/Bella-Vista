@@ -98,7 +98,7 @@ const CardPaymentPage = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/orders/card",
+        "https://localhost:5000/api/orders/card",
         {
           totalAmount: subtotal,
           nic: userDetails.nic,
@@ -108,7 +108,6 @@ const CardPaymentPage = () => {
             type: card.type,
             lastFourDigits: card.number.replace(/\s/g, "").slice(-4),
             nameOnCard: card.name,
-            // Don't send full card number, expiry, or CVV to backend for security
           }
         },
         {

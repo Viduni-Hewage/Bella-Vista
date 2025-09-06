@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Layout, Menu, Badge } from "antd";
-import { UserOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import { UserOutlined, ShoppingCartOutlined, HistoryOutlined, LogoutOutlined, LoginOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/useCart";
-import axios from "axios";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const { Header } = Layout;
 
@@ -14,12 +14,9 @@ const WebHeader = ({ visible }) => {
 
   const [showUserCard, setShowUserCard] = useState(false);
 
-  const token = localStorage.getItem("token");
+  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
 
-const [username, setUsername] = useState("");
-const [loading, setLoading] = useState(false);
-
-useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (userCardRef.current && !userCardRef.current.contains(event.target)) {
         setShowUserCard(false);
@@ -36,27 +33,6 @@ useEffect(() => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showUserCard]);
-
-useEffect(() => {
-  const fetchUser = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    setLoading(true);
-    try {
-      const res = await axios.get("http://localhost:5000/api/auth/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUsername(res.data.name || "");
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchUser();
-}, []);
 
   const handleMenuClick = (e) => {
     switch (e.key) {
@@ -84,11 +60,10 @@ useEffect(() => {
   };
 
   const handleUserButtonClick = () => {
-    if (token) {
-      localStorage.removeItem("token");
-      window.location.reload();
+    if (isAuthenticated) {
+      logout({ returnTo: window.location.origin });
     } else {
-      navigate("/login");
+      loginWithRedirect();
     }
   };
 
@@ -146,11 +121,33 @@ useEffect(() => {
             display: "flex",
             alignItems: "center",
             position: "relative",
+            padding: "8px 12px",
+            borderRadius: "50px",
+            transition: "all 0.3s ease",
+            backgroundColor: "transparent",
           }}
           onClick={() => setShowUserCard(!showUserCard)}
           ref={userCardRef}
         >
-          <UserOutlined style={{ fontSize: "20px", marginRight: "6px" }} />
+          <UserOutlined
+            style={{
+              fontSize: "20px",
+              marginRight: "6px",
+              color: "#9b3803ff",
+              transition: "color 0.3s ease",
+            }}
+          />
+          {isAuthenticated && (
+            <span
+              style={{
+                color: "#9b3803ff",
+                fontWeight: "500",
+                display: window.innerWidth > 768 ? "inline" : "none",
+              }}
+            >
+              {user.name}
+            </span>
+          )}
 
           {showUserCard && (
             <div
@@ -158,46 +155,139 @@ useEffect(() => {
                 position: "absolute",
                 top: "120%",
                 right: 0,
-                width:"20vw",
+                width: "280px",
                 minWidth: "16rem",
-                padding: "0.2rem 0.5rem",
-                background: "#ffffffff",
-                border: "1px solid #9b3803ff",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                borderRadius: "6px",
+                background: "#ffffff",
+                border: "1px solid #e8e8e8",
+                boxShadow: "0 8px 24px rgba(0, 0, 0, 0.12)",
+                borderRadius: "12px",
                 zIndex: 100,
-                display: "flex",
-                flexDirection: "column",
-                gap: "0rem",
+                overflow: "hidden",
+                animation: "slideDown 0.3s ease-out",
               }}
             >
-                 <p style={{ margin: 0, paddingLeft: 8, fontSize:"1.2rem" }}>
-  {loading ? "Loading..." : `Hi, ${username}`}
-</p>
-              <button
-                onClick={handleUserButtonClick}
+              <div
                 style={{
-                  height: "8vh",
-    padding: "0",
-    border: "none",
-    backgroundColor: "#fcf3eef",
-    color: token ? "red" : "green",
-    cursor: "pointer",
-    borderRadius: "4px",
-    fontWeight: "500",
-    fontSize:"1.2rem"
+                  padding: "20px",
+                  borderBottom: "1px solid #f0f0f0",
+                  background: isAuthenticated
+                    ? "linear-gradient(135deg, #9b3803ff 0%, #b8441eff 100%)"
+                    : "#f8f9fa",
+                  color: isAuthenticated ? "white" : "#333",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlign: "center",
+                  gap: "1px",
                 }}
               >
-                {token ? "Logout" : "Login"}
-              </button>
+                <div
+                  style={{
+                    width: "60px",
+                    height: "60px",
+                    borderRadius: "50%",
+                    background: isAuthenticated ? "rgba(255, 255, 255, 0.2)" : "#e9ecef",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <UserOutlined
+                    style={{
+                      fontSize: "24px",
+                      color: isAuthenticated ? "white" : "#6c757d",
+                    }}
+                  />
+                </div>
+
+                <div style={{ fontSize: "16px", fontWeight: "600" }}>
+                  {isAuthenticated ? `Hi, ${user.name}` : "Welcome"}
+                </div>
+
+                <div style={{ fontSize: "14px", opacity: 1, marginTop: "-2rem" }}>
+                  {isAuthenticated ? "Valued Customer" : "Please sign in"}
+                </div>
+              </div>
+
+              <div style={{ padding: "8px 0" }}>
+                {isAuthenticated && (
+                  <>
+                    <button
+                      onClick={() => {
+                        navigate("/purchase-history");
+                        setShowUserCard(false);
+                      }}
+                      style={{
+                        width: "100%",
+                        padding: "3px 20px",
+                        border: "none",
+                        background: "transparent",
+                        textAlign: "left",
+                        cursor: "pointer",
+                        fontSize: "14px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        transition: "background-color 0.2s ease",
+                      }}
+                      onMouseEnter={(e) => (e.target.style.backgroundColor = "#f8f8f8")}
+                      onMouseLeave={(e) => (e.target.style.backgroundColor = "transparent")}
+                    >
+                      <HistoryOutlined style={{ fontSize: "16px", color: "#666", width: "16px" }} />
+                      <span style={{ color: "#333", fontWeight: "500" }}>Purchase History</span>
+                    </button>
+
+                    <div
+                      style={{
+                        height: "1px",
+                        background: "#f0f0f0",
+                        margin: "0px 20px",
+                      }}
+                    ></div>
+                  </>
+                )}
+
+                <button
+                  onClick={() => {
+                    handleUserButtonClick();
+                    setShowUserCard(false);
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "12px 20px",
+                    border: "none",
+                    background: "transparent",
+                    textAlign: "left",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    transition: "background-color 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = isAuthenticated ? "#fff2f0" : "#f6ffed";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = "transparent";
+                  }}
+                >
+                  {isAuthenticated ? (
+                    <LogoutOutlined style={{ fontSize: "16px", color: "#ff4d4f", width: "16px" }} />
+                  ) : (
+                    <LoginOutlined style={{ fontSize: "16px", color: "#52c41a", width: "16px" }} />
+                  )}
+                  <span style={{ color: isAuthenticated ? "#ff4d4f" : "#52c41a", fontWeight: "600" }}>
+                    {isAuthenticated ? "Sign Out" : "Sign In"}
+                  </span>
+                </button>
+              </div>
             </div>
           )}
         </span>
 
-        <span
-          style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
-          onClick={() => navigate("/cart")}
-        >
+        <span style={{ cursor: "pointer", display: "flex", alignItems: "center" }} onClick={() => navigate("/cart")}>
           <Badge
             count={getCartCount()}
             offset={[0, 0]}
@@ -214,6 +304,19 @@ useEffect(() => {
           </Badge>
         </span>
       </div>
+
+      <style jsx>{`
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </Header>
   );
 };

@@ -22,7 +22,7 @@ const CodPayment = () => {
 
   try {
     const res = await axios.post(
-      "http://localhost:5000/api/orders/cod",
+      "https://localhost:5000/api/orders/cod",
       { 
         totalAmount: subtotal,
         nic: userDetails.nic,

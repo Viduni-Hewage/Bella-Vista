@@ -13,7 +13,7 @@ const Watches = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/products/category/watches");
+        const res = await axios.get("https://localhost:5000/api/products/category/watches");
         setProducts(res.data);
       } catch (err) {
         console.error(err);

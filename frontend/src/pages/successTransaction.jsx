@@ -6,9 +6,13 @@ import { useCart } from "../context/useCart";
 
 const SuccessTransaction = () => {
   const navigate = useNavigate();
-  const { removeSelectedItems } = useCart();
+  const { removeSelectedItems, cartItems, addPurchasedItems  } = useCart();
 
   useEffect(() => {
+    const purchased = cartItems.filter(item => item.selected);
+    if (purchased.length > 0) {
+      addPurchasedItems(purchased);
+    }
     removeSelectedItems();
     window.history.pushState(null, document.title, window.location.href);
     window.addEventListener("popstate", onBackButtonEvent);

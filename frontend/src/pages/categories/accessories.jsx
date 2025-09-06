@@ -12,7 +12,7 @@ const Accessories = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/products/category/accessories")
+      .get("https://localhost:5000/api/products/category/accessories")
       .then((res) => {
         setProducts(res.data);
         setLoading(false);

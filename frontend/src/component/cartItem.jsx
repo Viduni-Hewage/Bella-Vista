@@ -15,7 +15,6 @@ const CartItem = ({ item, qtyChangeHandler, removeHandler, toggleSelect }) => {
         position: "relative",
       }}
     >
-      {/* Checkbox */}
       <input
         type="checkbox"
         checked={item.selected || false}

@@ -17,6 +17,7 @@ import CartPage from './pages/cart';
 import CardPayment from './pages/cardPayment';
 import ProductDetail from './component/productDetail';
 import CodPayment from './pages/codPayment';
+import HistoryPage from './pages/history';
 
 const App = () => {
   return (
@@ -46,6 +47,7 @@ const App = () => {
           <Route path="card-payment" element={<CardPayment />} />
           <Route path="product/:id" element={<ProductDetail />} />
           <Route path="cod-payment" element={<CodPayment />} />
+          <Route path="purchase-history" element={<HistoryPage />} />
         
         </Route>
       </Routes>

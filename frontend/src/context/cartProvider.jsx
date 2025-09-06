@@ -6,6 +6,18 @@ const EXPIRY_DAYS = 30;
 
 const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
+  const [purchasedItems, setPurchasedItems] = useState([]);
+
+  useEffect(() => {
+    const storedHistory = localStorage.getItem("purchaseHistory");
+    if (storedHistory) {
+      setPurchasedItems(JSON.parse(storedHistory));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("purchaseHistory", JSON.stringify(purchasedItems));
+  }, [purchasedItems]);
 
   useEffect(() => {
     const stored = localStorage.getItem(CART_KEY);
@@ -86,6 +98,10 @@ const CartProvider = ({ children }) => {
     setCartItems(cartItems.filter((item) => !item.selected));
   };
 
+  const addPurchasedItems = (items) => {
+    setPurchasedItems([...purchasedItems, ...items]);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -100,6 +116,8 @@ const CartProvider = ({ children }) => {
         getSelectedSubTotal,
         removeSelectedItems,
         isInCart,
+        addPurchasedItems,
+        purchasedItems, 
       }}
     >
       {children}

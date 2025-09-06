@@ -14,4 +14,3 @@ const checkJwt = jwt({
 });
 
 module.exports = checkJwt;
-

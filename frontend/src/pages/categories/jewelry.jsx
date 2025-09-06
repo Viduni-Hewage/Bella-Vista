@@ -16,7 +16,7 @@ const Jewelry = () => {
       setLoading(true);
       try {
         const { data } = await axios.get(
-          `http://localhost:5000/api/products/category/jewelry`
+          `https://localhost:5000/api/products/category/jewelry`
         );
         // filter by type (necklaces, bracelets, earrings, rings)
         const filtered = data.filter((p) => p.type === selectedType);

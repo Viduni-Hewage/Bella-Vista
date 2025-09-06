@@ -37,7 +37,6 @@ const SignUp = () => {
             passwordType: typeof password 
         });
 
-        // Validate data before sending
         if (!email || !password) {
             console.error("Missing required fields:", { email: !!email, password: !!password });
             message.error("Please fill all required fields");
@@ -45,28 +44,27 @@ const SignUp = () => {
         }
 
         const requestData = { name, email, password };
-        console.log("Request data to send:", requestData); // Debug log
+        console.log("Request data to send:", requestData);
 
         try {
-            console.log("Making API call to:", "http://localhost:5000/api/auth/register"); // Debug log
+            console.log("Making API call to:", "https://localhost:5000/api/auth/register");
             
-            const res = await axios.post("http://localhost:5000/api/auth/register", requestData, {
+            const res = await axios.post("https://localhost:5000/api/auth/register", requestData, {
                 headers: {
                     'Content-Type': 'application/json',
                 }
             });
 
-            console.log("API Response:", res.data); // Debug log
+            console.log("API Response:", res.data);
 
             message.success(res.data.message || "User registered successfully");
 
-            // Redirect to login page after successful registration
             navigate("/login");
         } catch (err) {
-            console.error("Full error object:", err); // Debug log
-            console.error("Error response:", err.response); // Debug log
-            console.error("Error response data:", err.response?.data); // Debug log
-            console.error("Error status:", err.response?.status); // Debug log
+            console.error("Full error object:", err); 
+            console.error("Error response:", err.response);
+            console.error("Error response data:", err.response?.data); 
+            console.error("Error status:", err.response?.status); 
             
             const errorMessage = err.response?.data?.message || "Registration failed";
             message.error(errorMessage);
