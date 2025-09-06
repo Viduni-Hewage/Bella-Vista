@@ -1,69 +1,36 @@
-const User = require('../models/User');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const { findUserById } = require('../repositories/userRepo');
+const { registerUserService } = require('../services/authService');
 
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
-
-    if (!name || !email || !password) {
+    const { email, password, name } = req.body;
+    if (!email || !password || !name) {
       return res.status(400).json({ message: 'Please fill all fields' });
     }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'Email already registered' });
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const newUser = new User({
-      name,
-      email,
-      password: hashedPassword
+    const user = await registerUserService({ email, password, name });
+    res.status(201).json({ 
+      message: 'User registered successfully', 
+      user: { id: user._id, email: user.email, name: user.name } 
     });
-
-    await newUser.save();
-
-    res.status(201).json({ message: 'User registered successfully' });
   } catch (err) {
-    res.status(500).json({ message: 'Server Error', error: err.message });
+    res.status(400).json({ message: err.message });
   }
 };
 
-const loginUser = async (req, res) => {
+// Get current user (Auth0-ready)
+const getCurrentUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    // req.auth is populated by checkJwt middleware
+    const auth0UserId = req.auth.sub;
 
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Please fill all fields' });
-    }
+    const user = await findUserById(auth0UserId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid email or password' });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid email or password' });
-    }
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '7d'
-    });
-
-    res.status(200).json({
-      message: 'Login successful',
-      token
-    });
+    res.status(200).json({ name: user.name, email: user.email });
   } catch (err) {
-    res.status(500).json({ message: 'Server Error', error: err.message });
+    res.status(500).json({ message: 'Failed to fetch user' });
   }
 };
 
-module.exports = {
-  registerUser,
-  loginUser,
-};
+module.exports = { registerUser, getCurrentUser };
