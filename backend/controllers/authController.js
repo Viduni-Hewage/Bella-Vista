@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken'); 
+const { findUserById } = require('../repositories/userRepo');
 const { registerUserService, loginUserService } = require('../services/authService');
 
 const registerUser = async (req, res) => {
@@ -26,4 +28,22 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+const getCurrentUser = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer '))
+      return res.status(401).json({ message: 'Unauthorized' });
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await findUserById(decoded.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.status(200).json({ name: user.name, email: user.email });
+  } catch (err) {
+    res.status(401).json({ message: 'Token invalid or expired' });
+  }
+};
+
+module.exports = { registerUser, loginUser, getCurrentUser };
