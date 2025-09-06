@@ -1,12 +1,15 @@
 import React, { useEffect } from "react";
 import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
-import successGif from "../assets/success.png"; 
+import successGif from "../assets/success.png";
+import { useCart } from "../context/useCart"; 
 
 const SuccessTransaction = () => {
   const navigate = useNavigate();
+  const { removeSelectedItems } = useCart();
 
   useEffect(() => {
+    removeSelectedItems();
     window.history.pushState(null, document.title, window.location.href);
     window.addEventListener("popstate", onBackButtonEvent);
 

@@ -82,6 +82,10 @@ const CartProvider = ({ children }) => {
     .reduce((sum, item) => sum + item.price * item.qty, 0)
     .toFixed(2);
 
+  const removeSelectedItems = () => {
+    setCartItems(cartItems.filter((item) => !item.selected));
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -94,6 +98,7 @@ const CartProvider = ({ children }) => {
         getCartCount,
         getCartSubTotal,
         getSelectedSubTotal,
+        removeSelectedItems,
         isInCart,
       }}
     >
