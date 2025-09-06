@@ -18,6 +18,7 @@ import CardPayment from './pages/cardPayment';
 import ProductDetail from './component/productDetail';
 import CodPayment from './pages/codPayment';
 import HistoryPage from './pages/history';
+import Auth0CallbackHandler from './component/auth0CallbackHandler';
 
 const App = () => {
   return (
@@ -48,6 +49,7 @@ const App = () => {
           <Route path="product/:id" element={<ProductDetail />} />
           <Route path="cod-payment" element={<CodPayment />} />
           <Route path="purchase-history" element={<HistoryPage />} />
+          <Route path="/callback" element={<Auth0CallbackHandler />} />
         
         </Route>
       </Routes>

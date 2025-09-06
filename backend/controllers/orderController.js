@@ -1,18 +1,10 @@
-const jwt = require('jsonwebtoken');
 const orderService = require('../services/orderService');
 
 const createCODOrderController = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-      return res.status(401).json({ success: false, message: 'Unauthorized: No token provided' });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.id;
+    const userId = req.auth.sub;
 
     const { nic, phone, address, totalAmount } = req.body;
-
     if (!nic || !phone || !address || !totalAmount) {
       return res.status(400).json({ success: false, message: 'All fields are required' });
     }
@@ -32,23 +24,16 @@ const createCODOrderController = async (req, res) => {
       orderId: order._id,
     });
   } catch (error) {
-    console.error(error);
+    console.error('COD order creation error:', error);
     res.status(400).json({ success: false, message: error.message });
   }
 };
 
-
 const createCardOrderController = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-      return res.status(401).json({ success: false, message: 'Unauthorized: No token provided' });
-    }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.id;
+    const userId = req.auth.sub;
 
     const { nic, phone, address, totalAmount, cardDetails } = req.body;
-
     if (!nic || !phone || !address || !totalAmount || !cardDetails) {
       return res.status(400).json({ success: false, message: 'All fields are required' });
     }
@@ -85,11 +70,7 @@ const createCardOrderController = async (req, res) => {
     });
   } catch (error) {
     console.error('Card order creation error:', error);
-    
-    if (error.message.includes('Unauthorized') || error.message.includes('Invalid token')) {
-      return res.status(401).json({ success: false, message: error.message });
-    }
-    
+
     if (error.message.includes('required')) {
       return res.status(400).json({ success: false, message: error.message });
     }
@@ -102,4 +83,3 @@ module.exports = {
   createCODOrderController,
   createCardOrderController,
 };
-

@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Menu } from "antd";
+import { useAuth0 } from "@auth0/auth0-react"; // Add Auth0 import
 import cartBg1 from "../assets/cardPayment/cardbg1.png";
 import { useCart } from "../context/useCart";
 import UserDetails from "../component/userDetails";
@@ -9,45 +10,73 @@ import axios from "axios";
 const CodPayment = () => {
   const navigate = useNavigate();
   const { getSelectedSubTotal } = useCart();
+  
+  const { isAuthenticated, loginWithRedirect, getAccessTokenSilently } = useAuth0();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      loginWithRedirect({
+        appState: { returnTo: "/cod-payment" }
+      });
+    }
+  }, [isAuthenticated, loginWithRedirect]);
+
+  if (!isAuthenticated) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        fontSize: '1.2rem'
+      }}>
+        Checking authentication...
+      </div>
+    );
+  }
 
   const handleConfirmOrder = async (userDetails) => {
-  const token = localStorage.getItem("token");
-  const subtotal = getSelectedSubTotal();
+    const subtotal = getSelectedSubTotal();
 
-  if (!token) {
-    alert("Please login first!");
-    navigate("/login");
-    return;
-  }
+    try {
+      const token = await getAccessTokenSilently();
+       console.log("Auth0 Token:", token);
 
-  try {
-    const res = await axios.post(
-      "https://localhost:5000/api/orders/cod",
-      { 
-        totalAmount: subtotal,
-        nic: userDetails.nic,
-        phone: userDetails.phone,
-        address: userDetails.address
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const res = await axios.post(
+        "https://localhost:5000/api/orders/cod",
+        { 
+          totalAmount: subtotal,
+          nic: userDetails.nic,
+          phone: userDetails.phone,
+          address: userDetails.address
         },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.data.success) {
+        navigate("/success-transaction");
+      } else {
+        alert(res.data.message);
       }
-    );
-
-    if (res.data.success) {
-      navigate("/success-transaction");
-    } else {
-      alert(res.data.message);
+    } catch (err) {
+      console.error("Full error response:", err.response?.data);
+      console.error("Error status:", err.response?.status);
+      console.error("Error message:", err.message);
+      console.error(err);
+      if (err.message.includes('login_required')) {
+        loginWithRedirect({
+          appState: { returnTo: "/cod-payment" }
+        });
+      } else {
+        alert("Something went wrong");
+      }
     }
-  } catch (err) {
-    console.error(err);
-    alert("Something went wrong");
-  }
-};
-
+  };
 
   const handleMenuClick = (e) => {
     navigate(`/shop-by-category/${e.key}`);
@@ -97,8 +126,8 @@ const CodPayment = () => {
 
         <UserDetails onConfirmOrder={handleConfirmOrder} />        
         
-          </div>
-        </div>   
+      </div>
+    </div>   
   );
 };
 
