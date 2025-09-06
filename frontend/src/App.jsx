@@ -19,6 +19,7 @@ import ProductDetail from './component/productDetail';
 import CodPayment from './pages/codPayment';
 import HistoryPage from './pages/history';
 import Auth0CallbackHandler from './component/auth0CallbackHandler';
+import ProfilePage from './pages/profile';
 
 const App = () => {
   return (
@@ -50,6 +51,7 @@ const App = () => {
           <Route path="cod-payment" element={<CodPayment />} />
           <Route path="purchase-history" element={<HistoryPage />} />
           <Route path="/callback" element={<Auth0CallbackHandler />} />
+          <Route path="/profile" element={<ProfilePage />} />
         
         </Route>
       </Routes>
