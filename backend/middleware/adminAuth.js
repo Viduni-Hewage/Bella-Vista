@@ -2,7 +2,7 @@ const adminAuth = (req, res, next) => {
   try {
     const roles = req.auth["https://bella-vista-api/roles"] || [];
 
-    if (!roles.includes("admin")) {
+    if (!roles.includes("Admin")) {
       return res.status(403).json({ message: "Access denied. Admin only." });
     }
 

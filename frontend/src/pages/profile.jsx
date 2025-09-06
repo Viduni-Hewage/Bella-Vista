@@ -12,6 +12,9 @@ const ProfilePage = () => {
     navigate(`/shop-by-category/${e.key}`);
   };
 
+  const roles = user?.["https://bella-vista-api/roles"] || [];
+  const isAdmin = roles.includes("Admin");
+
   if (!isAuthenticated) {
     return (
       <div style={{ textAlign: "center", marginTop: "5rem" }}>
@@ -25,7 +28,6 @@ const ProfilePage = () => {
 
   return (
     <div>
-      {/* Header */}
       <div
         style={{
           width: "100%",
@@ -66,7 +68,6 @@ const ProfilePage = () => {
         </Menu>
       </div>
 
-      {/* Profile Content */}
       <div
         style={{
           maxWidth: "900px",
@@ -74,75 +75,111 @@ const ProfilePage = () => {
           padding: "0 20px",
         }}
       >
-        <h1 style={{ textAlign: "left", marginBottom: "2rem", fontWeight: "bold", fontFamily: "'Baskervville', serif", color: "#9b3803ff", margin: "3rem 2rem 2rem 0rem", fontSize:"1.7rem" }}>Profile</h1>
+        <h1
+          style={{
+            textAlign: "left",
+            marginBottom: "2rem",
+            fontWeight: "bold",
+            fontFamily: "'Baskervville', serif",
+            color: "#9b3803ff",
+            margin: "3rem 2rem 2rem 0rem",
+            fontSize: "1.7rem",
+          }}
+        >
+          Profile
+        </h1>
 
         <Card
+          style={{
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            textAlign: "center",
+          }}
+          bodyStyle={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "2rem",
+            gap: "2rem",
+          }}
+        >
+          <div
             style={{
-                display: "flex",
-                flexDirection: "column", // stack items vertically
-                alignItems: "center",    // center horizontally
-                justifyContent: "center",
-                padding: "2rem",
-                gap: "2rem",
-                borderRadius: "12px",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                textAlign: "center",
+              width: "100px",
+              height: "100px",
+              borderRadius: "50%",
+              background: "#f0f0f0",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "40px",
+              color: "#9b3803ff",
+              margin: "0 auto",
             }}
-            >
-            {/* Profile Icon */}
+          >
+            <UserOutlined />
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <h2 style={{ fontSize: "1.8rem", marginBottom: "1rem" }}>
+              {user.name}
+            </h2>
+            <p style={{ fontSize: "1.1rem", marginBottom: "0.5rem" }}>
+              <strong>Email:</strong> {user.email}
+            </p>
+            <p style={{ fontSize: "1.1rem", marginBottom: "0.5rem" }}>
+              <strong>Contact:</strong>{" "}
+              {user.phone_number ? user.phone_number : "Not provided"}
+            </p>
+            <p style={{ fontSize: "1.1rem", marginBottom: "3rem" }}>
+              <strong>Country:</strong>{" "}
+              {user.country ? user.country : "Not provided"}
+            </p>
+
             <div
-                style={{
-                width: "100px",
-                height: "100px",
-                borderRadius: "50%",
-                background: "#f0f0f0",
+              style={{
                 display: "flex",
-                alignItems: "center",
                 justifyContent: "center",
-                fontSize: "40px",
-                color: "#9b3803ff",
-                }}
+                gap: "6rem",
+                marginTop: "1rem",
+              }}
             >
-                <UserOutlined />
-            </div>
-
-            {/* User Info */}
-            <div style={{ flex: 1}}>
-                <h2 style={{fontSize:"1.8rem", marginBottom:"1rem"}}>{user.name}</h2>
-                <p style={{fontSize:"1.1rem", marginBottom:"0.5rem"}}>
-                <strong>Email:</strong> {user.email}
-                </p>
-                <p style={{fontSize:"1.1rem", marginBottom:"0.5rem"}}>
-                <strong>Contact:</strong> {user.phone_number ? user.phone_number : "Not provided"}
-                </p>
-                <p style={{fontSize:"1.1rem", marginBottom:"3rem"}}>
-                <strong>Country:</strong> {user.country ? user.country : "Not provided"}
-                </p>
-
-                {/* Buttons Row */}
-                <div style={{ display: "flex", justifyContent: "center", gap: "6rem", marginTop: "1rem" }}>
-                <Button style={{backgroundColor:"#9b3803ff", fontSize:"15px", fontWeight:"600", padding:"1.5rem 2rem"}}
-                    type="primary"
-                    icon={<HistoryOutlined />}
-                    onClick={() => navigate("/purchase-history")}
+              {isAdmin ? (
+                <Button
+                  style={{
+                    backgroundColor: "#9b3803ff",
+                    fontSize: "15px",
+                    fontWeight: "600",
+                    padding: "1.5rem 2rem",
+                  }}
+                  type="primary"
+                  icon={<HistoryOutlined />}
+                  onClick={() => navigate("/order-summary")}
                 >
-                    View Purchased History
+                  View Order Summary
                 </Button>
-
-                {/* <Button style={{fontSize:"15px", fontWeight:"600", padding:"1.5rem 2rem", border:"1px solid red"}}
-                    type="default"
-                    //onClick={() => logout({ returnTo: window.location.origin })}
+              ) : (
+                <Button
+                  style={{
+                    backgroundColor: "#9b3803ff",
+                    fontSize: "15px",
+                    fontWeight: "600",
+                    padding: "1.5rem 2rem",
+                  }}
+                  type="primary"
+                  icon={<HistoryOutlined />}
+                  onClick={() => navigate("/purchase-history")}
                 >
-                    Logout
-                </Button> */}
-                </div>
+                  View Purchased History
+                </Button>
+              )}
             </div>
-            </Card>
-
+          </div>
+        </Card>
       </div>
     </div>
   );
 };
 
 export default ProfilePage;
-

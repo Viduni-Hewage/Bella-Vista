@@ -20,6 +20,7 @@ import CodPayment from './pages/codPayment';
 import HistoryPage from './pages/history';
 import Auth0CallbackHandler from './component/auth0CallbackHandler';
 import ProfilePage from './pages/profile';
+import SummaryPage from './pages/orderSummary';
 
 const App = () => {
   return (
@@ -52,6 +53,7 @@ const App = () => {
           <Route path="purchase-history" element={<HistoryPage />} />
           <Route path="/callback" element={<Auth0CallbackHandler />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/order-summary" element={<SummaryPage />} />
         
         </Route>
       </Routes>

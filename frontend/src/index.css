@@ -22,3 +22,11 @@
 .ant-menu-horizontal > .ant-menu-item-selected {
   color: black !important;
 }
+
+.custom-table .ant-table-tbody > tr > td {
+  background-color: white; 
+}
+
+.custom-table .ant-table-tbody > tr:hover > td {
+  background-color: #fcf3eeff;
+}

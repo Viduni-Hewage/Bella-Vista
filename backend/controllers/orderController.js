@@ -29,6 +29,7 @@ const createCODOrderController = async (req, res) => {
   }
 };
 
+// Card order
 const createCardOrderController = async (req, res) => {
   try {
     const userId = req.auth.sub;
@@ -79,7 +80,41 @@ const createCardOrderController = async (req, res) => {
   }
 };
 
+const getAllOrdersController = async (req, res) => {
+  try {
+    const orders = await orderService.getAllOrdersForAdmin();
+    res.json({ success: true, orders });
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch orders' });
+  }
+};
+
+const updateOrderStatusController = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ success: false, message: 'Status is required' });
+    }
+
+    const updatedOrder = await orderService.updateOrderStatus(orderId, status);
+
+    if (!updatedOrder) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    res.json({ success: true, message: 'Order status updated', order: updatedOrder });
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   createCODOrderController,
   createCardOrderController,
+  getAllOrdersController,
+  updateOrderStatusController,
 };

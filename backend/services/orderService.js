@@ -1,57 +1,89 @@
-const Order = require('../models/Order');
+// const Order = require('../models/Order');
 
-const createCODOrder = async (orderData) => {
-  const { userId, nic, phone, address, totalAmount, paymentMethod } = orderData;
+// const createCODOrder = async (orderData) => {
+//   const { userId, nic, phone, address, totalAmount, paymentMethod } = orderData;
 
-  if (!userId || !nic || !phone || !address || !totalAmount) {
-    throw new Error('All required fields must be provided');
+//   if (!userId || !nic || !phone || !address || !totalAmount) {
+//     throw new Error('All required fields must be provided');
+//   }
+
+//   const order = await Order.create({
+//     userId,
+//     nic,
+//     phone,
+//     address,
+//     totalAmount,
+//     paymentMethod,
+//     status: 'pending',
+//     createdAt: new Date(),
+//   });
+
+//   return order;
+// };
+
+// const createCardOrder = async (orderData) => {
+//   const { userId, nic, phone, address, totalAmount, paymentMethod, cardDetails } = orderData;
+
+//   if (!userId || !nic || !phone || !address || !totalAmount || !cardDetails) {
+//     throw new Error('All required fields must be provided');
+//   }
+
+//   if (!cardDetails.type || !cardDetails.lastFourDigits || !cardDetails.nameOnCard) {
+//     throw new Error('Complete card details are required');
+//   }
+
+//   const order = await Order.create({
+//     userId,
+//     nic,
+//     phone,
+//     address,
+//     totalAmount,
+//     paymentMethod,
+//     cardDetails: {
+//       type: cardDetails.type,
+//       lastFourDigits: cardDetails.lastFourDigits,
+//       nameOnCard: cardDetails.nameOnCard,
+//     },
+//     status: 'paid',
+//     createdAt: new Date(),
+//   });
+
+//   return order;
+// };
+
+// module.exports = {
+//   createCODOrder,
+//   createCardOrder,
+// };
+
+const orderRepo = require('../repositories/orderRepo');
+
+class OrderService {
+  async createCODOrder(data) {
+    data.paymentMethod = 'COD';
+    return orderRepo.createOrder(data);
   }
 
-  const order = await Order.create({
-    userId,
-    nic,
-    phone,
-    address,
-    totalAmount,
-    paymentMethod,
-    status: 'pending',
-    createdAt: new Date(),
-  });
-
-  return order;
-};
-
-const createCardOrder = async (orderData) => {
-  const { userId, nic, phone, address, totalAmount, paymentMethod, cardDetails } = orderData;
-
-  if (!userId || !nic || !phone || !address || !totalAmount || !cardDetails) {
-    throw new Error('All required fields must be provided');
+  async createCardOrder(data) {
+    data.paymentMethod = 'Card';
+    return orderRepo.createOrder(data);
   }
 
-  if (!cardDetails.type || !cardDetails.lastFourDigits || !cardDetails.nameOnCard) {
-    throw new Error('Complete card details are required');
+  async getAllOrdersForAdmin() {
+    return orderRepo.getAllOrders();
   }
 
-  const order = await Order.create({
-    userId,
-    nic,
-    phone,
-    address,
-    totalAmount,
-    paymentMethod,
-    cardDetails: {
-      type: cardDetails.type,
-      lastFourDigits: cardDetails.lastFourDigits,
-      nameOnCard: cardDetails.nameOnCard,
-    },
-    status: 'paid',
-    createdAt: new Date(),
-  });
+  async getOrderById(orderId) {
+    return orderRepo.getOrderById(orderId);
+  }
 
-  return order;
-};
+  async updateOrderStatus(orderId, status) {
+    const allowedStatuses = ['pending', 'paid', 'shipped', 'delivered', 'cancelled'];
+    if (!allowedStatuses.includes(status)) {
+      throw new Error('Invalid status');
+    }
+    return orderRepo.updateOrderStatus(orderId, status);
+  }
+}
 
-module.exports = {
-  createCODOrder,
-  createCardOrder,
-};
+module.exports = new OrderService();

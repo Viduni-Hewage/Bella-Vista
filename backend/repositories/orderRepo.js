@@ -1,11 +1,21 @@
-const Order = require('../models/Order');
+const orderPipeline = require('../pipelines/orderPipeline');
 
-const createOrder = async (orderData) => {
-  const order = new Order(orderData);
-  return await order.save();
-};
+class OrderRepository {
+  async createOrder(orderData) {
+    return orderPipeline.create(orderData);
+  }
 
-module.exports = {
-  createOrder,
-  
-};
+  async getAllOrders() {
+    return orderPipeline.findAll();
+  }
+
+  async getOrderById(orderId) {
+    return orderPipeline.findById(orderId);
+  }
+
+  async updateOrderStatus(orderId, status) {
+    return orderPipeline.updateStatus(orderId, status);
+  }
+}
+
+module.exports = new OrderRepository();
