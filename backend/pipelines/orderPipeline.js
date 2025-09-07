@@ -7,7 +7,7 @@ class OrderPipeline {
   }
 
   async findAll() {
-    return Order.find().sort({ createdAt: -1 }); // latest first
+    return Order.find().sort({ createdAt: -1 }); 
   }
 
   async findById(orderId) {
@@ -18,7 +18,7 @@ class OrderPipeline {
     return Order.findByIdAndUpdate(
       orderId,
       { status },
-      { new: true } // return updated order
+      { new: true } 
     );
   }
 }
