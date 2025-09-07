@@ -27,6 +27,7 @@
 - Secure authentication and authorization using **Auth0**.
 - Integration with **MongoDB** for storing users, products, orders, and payments.
 - Optional usage tracking for admin insights.
+
 ## Technologies Used
 - **Frontend:** React, React Router, Ant Design, CSS  
 - **Authentication:** Auth0  
@@ -77,22 +78,24 @@ npm install
 cd ../backend
 npm install
 ```
-4. Create `.env` files for frontend and backend:
+### Environment Variables
+
+Create `.env` files for frontend and backend:
 
    - **Frontend `.env`:**
      ```bash
      VITE_AUTH0_DOMAIN=your-auth0-domain
      VITE_AUTH0_CLIENT_ID=your-auth0-client-id
      VITE_AUTH0_AUDIENCE=your-api-audience
-     VITE_API_URL=your-api-url
+     VITE_API_URL=http://localhost:5000
      ```
 
    - **Backend `.env`:**
      ```bash
      MONGO_URI=your-mongodb-connection-string
      JWT_SECRET=your-jwt-secret
-     PORT=your-backend-port
-     CORS_ORIGIN=your-frontend-url
+     PORT=5000
+     CORS_ORIGIN=http://localhost:5173
      AUTH0_DOMAIN=your-auth0-domain
      AUTH0_AUDIENCE=your-api-audience
      ```
@@ -108,7 +111,20 @@ npm run dev
 cd frontend
 npm run dev
 ```
-3. Open your browser at http://localhost:5173  to access the application.
+3. Open the application in the browser
+```bash
+http://localhost:5173
+```
+### Security & Environment Setup
+- Authentication
+     - Auth0 handles user login, registration, and roles
+     - JWT tokens verify sessions between frontend and backend
+
+- Security Practices
+     - Store sensitive keys in .env files (JWT_SECRET, MongoDB URI, Auth0 client ID/secret)
+     - Secure API routes with JWT verification
+     - Restrict CORS to frontend origin
+     - Sanitize user input in backend to prevent injection attacks
 
 ## Future Enhancements
 
@@ -119,3 +135,10 @@ npm run dev
 - Add personalized product recommendations.
 
 - Enhance admin dashboard with additional management features.
+
+## Blog & Further Reading
+
+Read more about my experience developing Bella Vista, including design decisions, security considerations, and key learnings on Medium:  
+👉  [Building Bella Vista: My Journey Developing an E-Commerce Web App](https://medium.com/@viduhewage02/building-bella-vista-my-journey-developing-an-e-commerce-web-app-a528903d3762)
+
+
