@@ -18,7 +18,9 @@
 - Automatic update of user details during checkout for convenience.
 
 ### Admin Features
-- View **order summaries** for all customers.
+- View overall website statistics.
+- Manage products (Create, Read, Update, Delete).
+- View order summaries for all customers.
 - Track payment and delivery status.
 - Update order status dynamically.
 
@@ -140,5 +142,6 @@ http://localhost:5173
 
 Read more about my experience developing Bella Vista, including design decisions, security considerations, and key learnings on Medium:  
 👉  [Building Bella Vista: My Journey Developing an E-Commerce Web App](https://medium.com/@viduhewage02/building-bella-vista-my-journey-developing-an-e-commerce-web-app-a528903d3762)
+
 
 
