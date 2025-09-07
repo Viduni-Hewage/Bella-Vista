@@ -8,23 +8,49 @@ import cartBg1 from "../assets/cardPayment/cardbg1.png";
 import { useCart } from "../context/useCart";
 import axios from "axios";
 
-const sanitizeInput = (value) => {
-  const temp = document.createElement("div");
-  temp.textContent = value;
-  return temp.innerHTML;
+const sanitizeInput = (str) => {
+  if (!str) return "";
+  return str.replace(/[&<>"'`=/]/g, (s) => {
+    const map = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+      "/": "&#x2F;",
+      "=": "&#x3D;",
+      "`": "&#x60;",
+    };
+    return map[s];
+  });
 };
 
 const CardPaymentPage = () => {
   const navigate = useNavigate();
   const { getSelectedSubTotal } = useCart();
-  const { isAuthenticated, loginWithRedirect, getAccessTokenSilently, user } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, getAccessTokenSilently } = useAuth0();
 
-  const [userDetails, setUserDetails] = useState({ nic: "", phone: "", address: "" });
-  const [userErrors, setUserErrors] = useState({ nic: "", phone: "", address: "" });
+  const [userDetails, setUserDetails] = useState({
+    nic: "",
+    phone: "",
+    address: "",
+    deliveryDate: "",
+    deliveryTime: "",
+    deliveryLocation: "",
+  });
+
+  const [errors, setErrors] = useState({});
   const [userConfirmed, setUserConfirmed] = useState(false);
 
-  const [card, setCard] = useState({ type: "", number: "", name: "", expiry: "", cvv: "" });
-  const [cardErrors, setCardErrors] = useState({ type: "", number: "", name: "", expiry: "", cvv: "" });
+  const [cardDetails, setCardDetails] = useState({
+    type: "",
+    number: "",
+    name: "",
+    expiry: "",
+    cvv: "",
+  });
+
+  const [cardErrors, setCardErrors] = useState({});
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -33,34 +59,49 @@ const CardPaymentPage = () => {
   }, [isAuthenticated, loginWithRedirect]);
 
   if (!isAuthenticated) {
-    return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", fontSize: "1.2rem" }}>Checking authentication...</div>;
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          fontSize: "1.2rem",
+        }}
+      >
+        Checking authentication...
+      </div>
+    );
   }
 
-  const handleUserChange = (field, value) => {
-    const sanitizedValue = sanitizeInput(value);
-    setUserDetails({ ...userDetails, [field]: sanitizedValue });
-    setUserErrors({ ...userErrors, [field]: "" });
+  const handleUserInputChange = (field, value) => {
+    setUserDetails({ ...userDetails, [field]: value });
+    setErrors({ ...errors, [field]: "" });
   };
 
   const validateUser = () => {
-    const errs = { nic: "", phone: "", address: "" };
-    if (!userDetails.nic) errs.nic = "Enter NIC";
+    const errs = {};
+    if (!userDetails.nic || !/^([0-9]{9}[vVxX]|[0-9]{12})$/.test(userDetails.nic))
+      errs.nic = "Enter valid NIC (9 digits + V/X or 12 digits)";
     if (!userDetails.phone || !/^\d{10}$/.test(userDetails.phone)) errs.phone = "Enter valid 10-digit phone number";
-    if (!userDetails.address) errs.address = "Enter address";
+    if (!userDetails.address || userDetails.address.length > 200) errs.address = "Enter valid address (max 200 chars)";
+    if (!userDetails.deliveryDate) errs.deliveryDate = "Please select a delivery date";
+    if (!userDetails.deliveryTime) errs.deliveryTime = "Please select a delivery time";
+    if (!userDetails.deliveryLocation) errs.deliveryLocation = "Please select a delivery location";
     return errs;
   };
 
   const handleConfirmUser = () => {
     const errs = validateUser();
-    setUserErrors(errs);
-    if (Object.values(errs).some((msg) => msg !== "")) return;
+    setErrors(errs);
+    const hasErrors = Object.values(errs).some((msg) => msg !== "");
+    if (hasErrors) return;
     setUserConfirmed(true);
-    alert("User Details Confirmed! You can now fill Card Details.");
+    alert("User details confirmed! Now you can fill in card details.");
   };
 
-  const handleCardChange = (field, value) => {
-    let newValue = value.replace(/</g, "&lt;").replace(/>/g, "&gt;"); // simple sanitization
-
+  const handleCardInputChange = (field, value) => {
+    let newValue = sanitizeInput(value);
     if (field === "number") {
       newValue = newValue.replace(/\D/g, "").slice(0, 16).replace(/(\d{4})/g, "$1 ").trim();
     }
@@ -71,57 +112,47 @@ const CardPaymentPage = () => {
     if (field === "cvv") {
       newValue = newValue.replace(/\D/g, "").slice(0, 3);
     }
-
-    setCard({ ...card, [field]: newValue });
+    setCardDetails({ ...cardDetails, [field]: newValue });
     setCardErrors({ ...cardErrors, [field]: "" });
   };
 
   const handleCardTypeSelect = (type) => {
-    setCard({ ...card, type });
+    setCardDetails({ ...cardDetails, type });
     setCardErrors({ ...cardErrors, type: "" });
   };
 
   const validateCard = () => {
-    const errs = { type: "", number: "", name: "", expiry: "", cvv: "" };
-    if (!card.type) errs.type = "Select card type";
-    if (!card.number || card.number.replace(/\s/g, "").length !== 16) errs.number = "Enter valid 16-digit card number";
-    if (!card.name) errs.name = "Enter name on card";
-    if (!card.expiry || !/^(0[1-9]|1[0-2])\/\d{2}$/.test(card.expiry)) errs.expiry = "Enter valid MM/YY";
-    if (!card.cvv || !/^\d{3}$/.test(card.cvv)) errs.cvv = "Enter valid 3-digit CVV";
+    const errs = {};
+    if (!cardDetails.type) errs.type = "Select card type";
+    if (!cardDetails.number || cardDetails.number.replace(/\s/g, "").length !== 16) errs.number = "Enter valid 16-digit card number";
+    if (!cardDetails.name) errs.name = "Enter name on card";
+    if (!cardDetails.expiry || !/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardDetails.expiry)) errs.expiry = "Enter valid MM/YY";
+    if (!cardDetails.cvv || !/^\d{3}$/.test(cardDetails.cvv)) errs.cvv = "Enter valid 3-digit CVV";
     return errs;
   };
 
   const handleConfirmPayment = async () => {
-    const cardValidationErrors = validateCard();
-    setCardErrors(cardValidationErrors);
-    if (Object.values(cardValidationErrors).some((msg) => msg !== "")) return;
+    const errs = validateCard();
+    setCardErrors(errs);
+    const hasErrors = Object.values(errs).some((msg) => msg !== "");
+    if (hasErrors) return;
 
     const subtotal = getSelectedSubTotal();
-
     try {
       const token = await getAccessTokenSilently();
-
       const res = await axios.post(
         "https://localhost:5000/api/orders/card",
         {
           totalAmount: subtotal,
-          nic: userDetails.nic,
-          phone: userDetails.phone,
-          address: userDetails.address,
-          cardDetails: {
-            type: card.type,
-            lastFourDigits: card.number.replace(/\s/g, "").slice(-4),
-            nameOnCard: card.name,
+          ...userDetails,
+          card: {
+            type: cardDetails.type,
+            number: cardDetails.number.replace(/\s/g, "").slice(-4),
+            name: cardDetails.name,
           },
         },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
       if (res.data.success) {
         alert("Payment successful!");
         navigate("/success-transaction");
@@ -129,30 +160,40 @@ const CardPaymentPage = () => {
         alert(res.data.message);
       }
     } catch (err) {
-      console.error("Payment error:", err);
-      if (err.message.includes("login_required")) {
-        loginWithRedirect({ appState: { returnTo: "/card-payment" } });
-      } else {
-        alert("Payment failed. Please try again.");
-      }
+      console.error(err.response?.data || err.message);
+      alert("Payment failed. Try again.");
     }
   };
 
-  const handleMenuClick = (e) => {
-    navigate(`/shop-by-category/${e.key}`);
-  };
+  const handleMenuClick = (e) => navigate(`/shop-by-category/${e.key}`);
+
+  const labelStyle = { fontWeight: "400", marginBottom: "0.5rem", color: "black" };
+  const inputStyle = { padding: "8px", border: "1px solid #ccc", borderRadius: "4px", fontSize: "14px" };
+  const errorStyle = { color: "red", fontSize: "13px", margin: "0.15rem 0 0 0" };
+  const fieldContainerStyle = { display: "flex", flexDirection: "column", marginBottom: "0.8rem" };
 
   return (
     <div style={{ minHeight: "100vh" }}>
-      {/* Header */}
       <div style={{ width: "100%", background: "#fcf3eeff", padding: "1rem 40px 0 0", boxShadow: "0 2px 8px #f0f1f2" }}>
         <div
-          style={{ fontSize: "5rem", fontWeight: "500", fontFamily: "'Baskervville', serif", color: "#9b3803ff", cursor: "pointer", textAlign: "center", marginBottom: "0.5rem" }}
+          style={{
+            fontSize: "5rem",
+            fontWeight: "500",
+            fontFamily: "'Baskervville', serif",
+            color: "#9b3803ff",
+            cursor: "pointer",
+            textAlign: "center",
+            marginBottom: "0.5rem",
+          }}
           onClick={() => navigate("/")}
         >
           Bella Vista
         </div>
-        <Menu mode="horizontal" style={{ justifyContent: "center", fontSize: "1rem", background: "transparent", gap: "3rem" }} onClick={handleMenuClick}>
+        <Menu
+          mode="horizontal"
+          style={{ justifyContent: "center", fontSize: "1rem", background: "transparent", gap: "3rem" }}
+          onClick={handleMenuClick}
+        >
           <Menu.Item key="jewelry">Jewelry</Menu.Item>
           <Menu.Item key="watches">Watches</Menu.Item>
           <Menu.Item key="decorations">Decorations</Menu.Item>
@@ -191,69 +232,118 @@ const CardPaymentPage = () => {
 
         <div
           style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "3rem",
+            justifyContent: "center",
             width: "100%",
             maxWidth: "1200px",
-            display: "flex",
-            gap: "6rem",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            alignItems: "flex-start",
-            margin: "0 auto",
           }}
         >
-          <div style={{ flex: "1 1 400px", maxWidth: "500px", display: "flex", justifyContent: "center" }}>
-            <div style={{ width: "100%", padding: "2.5rem 2.2rem", border: "1px solid #ccc", borderRadius: "8px", background: "#fafafa", display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <h3 style={{ textAlign: "center", fontWeight: "bold", fontFamily: "'Baskervville', serif", color: "#9b3803ff", marginBottom: "1rem", fontSize: "1.5rem" }}>
-                User Details
-              </h3>
+          <div style={{ flex: "1 1 400px", maxWidth: "500px" }}>
+            <div style={{ width: "100%", padding: "2rem", border: "1px solid #ccc", borderRadius: "8px", background: "#fafafa", display: "flex", flexDirection: "column" }}>
+              <h3 style={{ textAlign: "center", fontWeight: "bold", marginBottom: "1rem" }}>User & Delivery Details</h3>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                {["nic", "phone", "address"].map((field) => (
-                  <div key={field} style={{ display: "flex", flexDirection: "column" }}>
-                    <label style={{ fontWeight: "400", marginBottom: "0.5rem", color: "black" }}>{field.toUpperCase()}</label>
-                    {field !== "address" ? (
-                      <input type="text" value={userDetails[field]} onChange={(e) => handleUserChange(field, e.target.value)} style={{ padding: "8px", border: "1px solid #ccc", borderRadius: "4px", fontSize: "14px" }} />
-                    ) : (
-                      <textarea value={userDetails[field]} onChange={(e) => handleUserChange(field, e.target.value)} rows={3} style={{ padding: "8px", border: "1px solid #ccc", borderRadius: "4px", fontSize: "14px", resize: "none" }} />
-                    )}
-                    {userErrors[field] && <p style={{ color: "red", fontSize: "13px", margin: "0.15rem 0 0 0" }}>{userErrors[field]}</p>}
-                  </div>
-                ))}
-                <button onClick={handleConfirmUser} style={{ padding: "12px", background: "#9b3803ff", color: "#fff", border: "none", cursor: "pointer", fontWeight: "bold", borderRadius: "6px", marginTop: "1rem" }}>
-                  Confirm User Details
-                </button>
+              <div style={fieldContainerStyle}>
+                <label style={labelStyle}>NIC</label>
+                <input type="text" style={inputStyle} placeholder="Enter your NIC" value={userDetails.nic} onChange={(e) => handleUserInputChange("nic", e.target.value)} />
+                {errors.nic && <p style={errorStyle}>{errors.nic}</p>}
               </div>
+
+              <div style={fieldContainerStyle}>
+                <label style={labelStyle}>Phone</label>
+                <input type="text" style={inputStyle} placeholder="Enter your phone" value={userDetails.phone} onChange={(e) => handleUserInputChange("phone", e.target.value)} />
+                {errors.phone && <p style={errorStyle}>{errors.phone}</p>}
+              </div>
+
+              <div style={fieldContainerStyle}>
+                <label style={labelStyle}>Address</label>
+                <textarea style={{ ...inputStyle, resize: "none" }} rows={3} placeholder="Enter address" value={userDetails.address} onChange={(e) => handleUserInputChange("address", e.target.value)} />
+                {errors.address && <p style={errorStyle}>{errors.address}</p>}
+              </div>
+
+              <div style={fieldContainerStyle}>
+                <label style={labelStyle}>Delivery Date</label>
+                <input type="date" style={inputStyle} value={userDetails.deliveryDate} onChange={(e) => handleUserInputChange("deliveryDate", e.target.value)} min={new Date().toISOString().split("T")[0]} />
+                {errors.deliveryDate && <p style={errorStyle}>{errors.deliveryDate}</p>}
+              </div>
+
+              <div style={fieldContainerStyle}>
+                <label style={labelStyle}>Delivery Time</label>
+                <select style={inputStyle} value={userDetails.deliveryTime} onChange={(e) => handleUserInputChange("deliveryTime", e.target.value)}>
+                  <option value="">Select Time</option>
+                  <option value="10 AM">10 AM</option>
+                  <option value="11 AM">11 AM</option>
+                  <option value="12 PM">12 PM</option>
+                </select>
+                {errors.deliveryTime && <p style={errorStyle}>{errors.deliveryTime}</p>}
+              </div>
+
+              <div style={fieldContainerStyle}>
+                <label style={labelStyle}>Delivery Location</label>
+                <select style={inputStyle} value={userDetails.deliveryLocation} onChange={(e) => handleUserInputChange("deliveryLocation", e.target.value)}>
+                  <option value="">Select District</option>
+                  <option value="Colombo">Colombo</option>
+                  <option value="Gampaha">Gampaha</option>
+                  <option value="Kandy">Kandy</option>
+                  <option value="Kurunegala">Kurunegala</option>
+                  <option value="Galle">Galle</option>
+                </select>
+                {errors.deliveryLocation && <p style={errorStyle}>{errors.deliveryLocation}</p>}
+              </div>
+
+              <button onClick={handleConfirmUser} style={{ padding: "12px", background: "#171717", color: "#fff", border: "none", cursor: "pointer", fontWeight: "bold", borderRadius: "6px", marginTop: "1rem" }}>
+                Confirm Details
+              </button>
             </div>
           </div>
 
-          <div style={{ flex: "1 1 400px", maxWidth: "500px", position: "relative", display: "flex", justifyContent: "center" }} onClick={() => !userConfirmed && alert("Please complete the User Details form first")}>
-            <div style={{ width: "100%", background: "rgba(255,255,255,0.95)", padding: "2.5rem 2rem", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0,0,0,0.3)", display: "flex", flexDirection: "column", gap: "1rem", pointerEvents: userConfirmed ? "auto" : "none", position: "relative" }}>
-              {!userConfirmed && <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(200,200,200,0.5)", borderRadius: "10px", zIndex: 5 }} />}
-              <h2 style={{ textAlign: "center", fontWeight: "bold", fontFamily: "'Baskervville', serif", color: "#9b3803ff", marginBottom: "1rem", fontSize: "1.5rem" }}>Add Card Details</h2>
+          <div style={{ flex: "1 1 400px", maxWidth: "500px", position: "relative" }}>
+            <div style={{ width: "100%", padding: "2rem", border: "1px solid #ccc", borderRadius: "8px", background: "#fafafa", display: "flex", flexDirection: "column", position: "relative" }}>
+              <h3 style={{ textAlign: "center", fontWeight: "bold", marginBottom: "1rem" }}>Card Details</h3>
 
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <div style={{ display: "flex", gap: "2rem", alignItems: "center", justifyContent: "center", marginBottom: "1rem" }}>
-                  <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
-                    <input type="radio" name="cardType" value="visa" checked={card.type === "visa"} onChange={() => handleCardTypeSelect("visa")} />
-                    <img src={visaImg} alt="Visa" style={{ height: "30px" }} />
-                  </label>
-                  <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
-                    <input type="radio" name="cardType" value="master" checked={card.type === "master"} onChange={() => handleCardTypeSelect("master")} />
-                    <img src={masterImg} alt="MasterCard" style={{ height: "30px" }} />
-                  </label>
-                </div>
-                {["number", "name", "expiry", "cvv"].map((field) => (
-                  <div key={field} style={{ display: "flex", flexDirection: "column", marginBottom: "0.8rem" }}>
-                    <label style={{ fontWeight: "400", marginBottom: "0.5rem", color: "black" }}>{field === "name" ? "Name on Card" : field.toUpperCase()}</label>
-                    <input type={field === "cvv" ? "password" : "text"} value={card[field]} onChange={(e) => handleCardChange(field, e.target.value)} style={{ padding: "8px", border: "1px solid #ccc", borderRadius: "4px", fontSize: "14px" }} />
-                    {cardErrors[field] && <p style={{ color: "red", fontSize: "13px", margin: "0.15rem 0 0 0" }}>{cardErrors[field]}</p>}
-                  </div>
-                ))}
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <img src={visaImg} alt="Visa" onClick={() => handleCardTypeSelect("Visa")} style={{ cursor: "pointer", width: "60px", border: cardDetails.type === "Visa" ? "2px solid #9b3803ff" : "1px solid #ccc", borderRadius: "4px", padding: "2px" }} />
+                <img src={masterImg} alt="Mastercard" onClick={() => handleCardTypeSelect("Mastercard")} style={{ cursor: "pointer", width: "60px", border: cardDetails.type === "Mastercard" ? "2px solid #9b3803ff" : "1px solid #ccc", borderRadius: "4px", padding: "2px" }} />
               </div>
+              {cardErrors.type && <p style={errorStyle}>{cardErrors.type}</p>}
+
+              <input type="text" style={inputStyle} placeholder="Card Number" value={cardDetails.number} onChange={(e) => handleCardInputChange("number", e.target.value)} />
+              {cardErrors.number && <p style={errorStyle}>{cardErrors.number}</p>}
+
+              <input type="text" style={inputStyle} placeholder="Name on Card" value={cardDetails.name} onChange={(e) => handleCardInputChange("name", e.target.value)} />
+              {cardErrors.name && <p style={errorStyle}>{cardErrors.name}</p>}
+
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <input type="text" style={{ ...inputStyle, flex: 1 }} placeholder="Expiry MM/YY" value={cardDetails.expiry} onChange={(e) => handleCardInputChange("expiry", e.target.value)} />
+                <input type="text" style={{ ...inputStyle, flex: 1 }} placeholder="CVV" value={cardDetails.cvv} onChange={(e) => handleCardInputChange("cvv", e.target.value)} />
+              </div>
+              {cardErrors.expiry && <p style={errorStyle}>{cardErrors.expiry}</p>}
+              {cardErrors.cvv && <p style={errorStyle}>{cardErrors.cvv}</p>}
 
               <button onClick={handleConfirmPayment} style={{ padding: "12px", background: "#171717", color: "#fff", border: "none", cursor: "pointer", fontWeight: "bold", borderRadius: "6px", marginTop: "1rem" }}>
                 Confirm Payment
               </button>
+
+              {!userConfirmed && (
+                <div
+                  onClick={() => alert("Please fill and confirm your user details first!")}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: "rgba(255,255,255,0.6)",
+                    cursor: "not-allowed",
+                    borderRadius: "8px",
+                    zIndex: 10,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                ></div>
+              )}
             </div>
           </div>
         </div>
