@@ -4,8 +4,8 @@ const createCODOrderController = async (req, res) => {
   try {
     const userId = req.auth.sub;
 
-    const { nic, phone, address, totalAmount } = req.body;
-    if (!nic || !phone || !address || !totalAmount) {
+    const { nic, phone, address, totalAmount, deliveryDate, deliveryTime, deliveryLocation } = req.body;
+    if (!nic || !phone || !address || !totalAmount || !deliveryDate || !deliveryTime || !deliveryLocation) {
       return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
@@ -16,6 +16,9 @@ const createCODOrderController = async (req, res) => {
       address,
       totalAmount,
       paymentMethod: 'COD',
+      deliveryDate,
+      deliveryTime,
+      deliveryLocation,
     });
 
     res.status(201).json({
@@ -29,13 +32,12 @@ const createCODOrderController = async (req, res) => {
   }
 };
 
-// Card order
 const createCardOrderController = async (req, res) => {
   try {
     const userId = req.auth.sub;
 
-    const { nic, phone, address, totalAmount, cardDetails } = req.body;
-    if (!nic || !phone || !address || !totalAmount || !cardDetails) {
+    const { nic, phone, address, totalAmount, cardDetails, deliveryDate, deliveryTime, deliveryLocation } = req.body;
+    if (!nic || !phone || !address || !totalAmount || !cardDetails || !deliveryDate || !deliveryTime || !deliveryLocation) {
       return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
@@ -54,7 +56,10 @@ const createCardOrderController = async (req, res) => {
         type: cardDetails.type,
         lastFourDigits: cardDetails.lastFourDigits,
         nameOnCard: cardDetails.nameOnCard,
-      }
+      },
+      deliveryDate,
+      deliveryTime,
+      deliveryLocation,
     });
 
     res.status(201).json({
@@ -66,6 +71,9 @@ const createCardOrderController = async (req, res) => {
         totalAmount: order.totalAmount,
         status: order.status,
         paymentMethod: order.paymentMethod,
+        deliveryDate: order.deliveryDate,
+        deliveryTime: order.deliveryTime,
+        deliveryLocation: order.deliveryLocation,
         createdAt: order.createdAt,
       }
     });
@@ -118,3 +126,4 @@ module.exports = {
   getAllOrdersController,
   updateOrderStatusController,
 };
+

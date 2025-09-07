@@ -21,6 +21,24 @@ const orderSchema = new mongoose.Schema({
       required: function() { return this.paymentMethod === 'Card'; }
     }
   },
+   deliveryDate: {
+    type: Date,
+    required: true,
+    validate: {
+      validator: function (value) {
+        const today = new Date();
+        const given = new Date(value);
+
+        // must be today or future
+        if (given < today.setHours(0, 0, 0, 0)) return false;
+        // exclude Sundays
+        return given.getDay() !== 0;
+      },
+      message: "Delivery date must be today or later and not Sunday"
+    }
+  },
+  deliveryTime: { type: String, required: true }, // store as string "10:30 AM"
+  deliveryLocation: { type: String, required: true },
   status: { 
     type: String, 
     enum: ['pending', 'paid', 'shipped', 'delivered', 'cancelled'], 
