@@ -1,4 +1,5 @@
-import { Routes, Route } from 'react-router-dom';
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import ScrollToTop from './component/ScrollToTop';
 import Layout from './hoc/Layout';
 import Home from './pages/homePage';
@@ -18,8 +19,8 @@ import CodPayment from './pages/codPayment';
 import HistoryPage from './pages/history';
 import Auth0CallbackHandler from './component/auth0CallbackHandler';
 import ProfilePage from './pages/profile';
-import SummaryPage from './pages/orderSummary';
 import ProtectedRoute from './component/protectedRoute';
+import AdminDashboard from './pages/admin/adminDashboard';
 
 const App = () => {
   return (
@@ -44,12 +45,14 @@ const App = () => {
           <Route path="product/:id" element={<ProductDetail />} />
           <Route path="purchase-history" element={<HistoryPage />} />
           <Route path="/callback" element={<Auth0CallbackHandler />} />
+          <Route path="admin-dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
 
           <Route path="success-transaction" element={<ProtectedRoute><SuccessTransaction /></ProtectedRoute>} />
           <Route path="card-payment" element={<ProtectedRoute><CardPayment /></ProtectedRoute>} />
           <Route path="cod-payment" element={<ProtectedRoute><CodPayment /></ProtectedRoute>} />
           <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-          <Route path="order-summary" element={<ProtectedRoute><SummaryPage /></ProtectedRoute>} />
+
+
         </Route>
       </Routes>
     </>
@@ -57,4 +60,5 @@ const App = () => {
 };
 
 export default App;
+
 

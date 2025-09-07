@@ -155,9 +155,9 @@ const ProfilePage = () => {
                   }}
                   type="primary"
                   icon={<HistoryOutlined />}
-                  onClick={() => navigate("/order-summary")}
+                  onClick={() => navigate("/admin-dashboard")}
                 >
-                  View Order Summary
+                  Go to Dashboard
                 </Button>
               ) : (
                 <Button

@@ -1,15 +1,19 @@
 const productRepo = require('../repositories/productRepo');
 
-const getAllProducts = async () => {
-  return await productRepo.findAll();
-};
+const getAllProducts = async () => productRepo.findAll();
+const getAllProductsForAdmin = async () => productRepo.findAllForAdmin();
+const getProductById = async (id) => productRepo.findById(id);
+const getProductsByCategory = async (category) => productRepo.findByCategory(category);
+const createProduct = async (data) => productRepo.createProduct(data);
+const updateProduct = async (id, data) => productRepo.updateProduct(id, data);
+const deleteProduct = async (id) => productRepo.deleteProduct(id);
 
-const getProductById = async (id) => {
-  return await productRepo.findById(id);
+module.exports = {
+  getAllProducts,
+  getAllProductsForAdmin,
+  getProductById,
+  getProductsByCategory,
+  createProduct,
+  updateProduct,
+  deleteProduct
 };
-
-const getProductsByCategory = async (category) => {
-  return await productRepo.findByCategory(category);
-};
-
-module.exports = { getAllProducts, getProductById, getProductsByCategory };
