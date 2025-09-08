@@ -11,25 +11,26 @@ const Jewelry = () => {
   const [loading, setLoading] = useState(false);
   const [selectedType, setSelectedType] = useState("necklaces"); // default type
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        const { data } = await axios.get(
-          `https://localhost:5000/api/products/category/jewelry`
-        );
-        // filter by type (necklaces, bracelets, earrings, rings)
-        const filtered = data.filter((p) => p.type === selectedType);
-        setProducts(filtered);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const { data } = await axios.get(
+        `https://localhost:5000/api/products/category/jewelry`
+      );
+      const productList = data.products || [];
+      const filtered = productList.filter((p) => p.type === selectedType);
+      setProducts(filtered);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchProducts();
-  }, [selectedType]);
+  fetchProducts();
+}, [selectedType]);
 
   return (
     <div>

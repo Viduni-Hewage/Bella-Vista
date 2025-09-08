@@ -11,17 +11,18 @@ const Decorations = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get("https://localhost:5000/api/products/category/decorations")
-      .then((res) => {
-        setProducts(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
-      });
-  }, []);
+  axios
+    .get("https://localhost:5000/api/products/category/decorations")
+    .then((res) => {
+      setProducts(res.data.products || []);
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.error(err);
+      setProducts([]); 
+      setLoading(false);
+    });
+}, []);
 
   return (
     <div>
