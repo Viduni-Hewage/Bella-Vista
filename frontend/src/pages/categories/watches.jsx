@@ -11,18 +11,19 @@ const Watches = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await axios.get("https://localhost:5000/api/products/category/watches");
-        setProducts(res.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get("https://localhost:5000/api/products/category/watches");
+      setProducts(res.data.products || []);
+    } catch (err) {
+      console.error(err);
+      setProducts([]); 
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchProducts();
+}, []);
 
   return (
     <div>
