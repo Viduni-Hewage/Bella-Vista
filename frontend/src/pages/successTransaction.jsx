@@ -6,14 +6,15 @@ import { useCart } from "../context/useCart";
 
 const SuccessTransaction = () => {
   const navigate = useNavigate();
-  const { removeSelectedItems, cartItems, addPurchasedItems  } = useCart();
+  const { removeSelectedItems, cartItems, addPurchasedItems } = useCart();
 
   useEffect(() => {
-    const purchased = cartItems.filter(item => item.selected);
+    const purchased = cartItems.filter((item) => item.selected);
     if (purchased.length > 0) {
       addPurchasedItems(purchased);
     }
     removeSelectedItems();
+
     window.history.pushState(null, document.title, window.location.href);
     window.addEventListener("popstate", onBackButtonEvent);
 
@@ -41,7 +42,6 @@ const SuccessTransaction = () => {
         boxSizing: "border-box",
       }}
     >
-  
       <img
         src={successGif}
         alt="Transaction Successful"
@@ -69,15 +69,27 @@ const SuccessTransaction = () => {
           fontWeight: "400",
           padding: "1.3rem 5rem",
           fontSize:"1rem"
-
         }}
         onClick={() => navigate("/")}
       >
         Back Home
+      </Button>
+
+      <Button
+        type="default"
+        style={{
+          marginTop: "1rem",
+          borderRadius: 4,
+          padding: "1.2rem 4rem",
+          fontSize: "1rem",
+          fontWeight: "400",
+        }}
+        onClick={() => navigate("/purchase-history")}
+      >
+        View Purchase History
       </Button>
     </div>
   );
 };
 
 export default SuccessTransaction;
-
