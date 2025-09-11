@@ -145,10 +145,10 @@ const CardPaymentPage = () => {
         {
           totalAmount: subtotal,
           ...userDetails,
-          card: {
+          cardDetails: {
             type: cardDetails.type,
-            number: cardDetails.number.replace(/\s/g, "").slice(-4),
-            name: cardDetails.name,
+            lastFourDigits: cardDetails.number.replace(/\s/g, "").slice(-4),
+            nameOnCard: cardDetails.name,
           },
         },
         { headers: { Authorization: `Bearer ${token}` } }
