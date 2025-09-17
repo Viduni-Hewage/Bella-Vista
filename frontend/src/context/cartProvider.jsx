@@ -1,23 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { CartContext } from "./cartContext";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const CART_KEY = "cartData";
 const EXPIRY_DAYS = 30;
 
 const CartProvider = ({ children }) => {
+  const { user, isAuthenticated } = useAuth0();
   const [cartItems, setCartItems] = useState([]);
   const [purchasedItems, setPurchasedItems] = useState([]);
 
-  useEffect(() => {
-    const storedHistory = localStorage.getItem("purchaseHistory");
-    if (storedHistory) {
-      setPurchasedItems(JSON.parse(storedHistory));
-    }
-  }, []);
+  const historyKey = isAuthenticated ? `purchaseHistory_${user.sub}` : null;
 
   useEffect(() => {
-    localStorage.setItem("purchaseHistory", JSON.stringify(purchasedItems));
-  }, [purchasedItems]);
+    if (historyKey) {
+      const storedHistory = localStorage.getItem(historyKey);
+      if (storedHistory) {
+        setPurchasedItems(JSON.parse(storedHistory));
+      } else {
+        setPurchasedItems([]);
+      }
+    }
+  }, [historyKey]);
+
+  useEffect(() => {
+    if (historyKey) {
+      localStorage.setItem(historyKey, JSON.stringify(purchasedItems));
+    }
+  }, [purchasedItems, historyKey]);
 
   useEffect(() => {
     const stored = localStorage.getItem(CART_KEY);
@@ -89,17 +99,27 @@ const CartProvider = ({ children }) => {
   const isInCart = (productId) => cartItems.some((item) => item._id === productId);
 
   const getSelectedSubTotal = () =>
-  cartItems
-    .filter((item) => item.selected)
-    .reduce((sum, item) => sum + item.price * item.qty, 0)
-    .toFixed(2);
+    cartItems
+      .filter((item) => item.selected)
+      .reduce((sum, item) => sum + item.price * item.qty, 0)
+      .toFixed(2);
 
   const removeSelectedItems = () => {
     setCartItems(cartItems.filter((item) => !item.selected));
   };
 
   const addPurchasedItems = (items) => {
-    setPurchasedItems([...purchasedItems, ...items]);
+    if (isAuthenticated) {
+      setPurchasedItems([...purchasedItems, ...items]);
+    }
+  };
+
+  const removePurchasedItem = (id) => {
+    setPurchasedItems(purchasedItems.filter((item) => item._id !== id));
+  };
+
+  const clearPurchaseHistory = () => {
+    setPurchasedItems([]);
   };
 
   return (
@@ -117,7 +137,9 @@ const CartProvider = ({ children }) => {
         removeSelectedItems,
         isInCart,
         addPurchasedItems,
-        purchasedItems, 
+        purchasedItems,
+        removePurchasedItem,
+        clearPurchaseHistory,
       }}
     >
       {children}

@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import OrderManagementPage from "./orderManagement";
 import ProductManagementPage from "./productManagement";
 import StatisticsPage from "./adminStatistics";
+import UserManagementPage from "./userManagement";
 
 const AdminDashboard = () => {
   const [selectedPage, setSelectedPage] = useState("Statistics");
 
   const renderContent = () => {
+    if (selectedPage === "User Management") return <UserManagementPage />;
     if (selectedPage === "Product Management") return <ProductManagementPage />;
     if (selectedPage === "Order Management") return <OrderManagementPage />;
     return <StatisticsPage />;
@@ -37,7 +39,7 @@ const AdminDashboard = () => {
             borderRight: "1px solid #da7945ff",
           }}
         >
-          {["Statistics", "Product Management", "Order Management"].map((item) => (
+          {["Statistics", "User Management", "Product Management", "Order Management"].map((item) => (
             <button
               key={item}
               onClick={() => setSelectedPage(item)}

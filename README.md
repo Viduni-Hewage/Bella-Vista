@@ -100,6 +100,8 @@ Create `.env` files for frontend and backend:
      CORS_ORIGIN=http://localhost:5173
      AUTH0_DOMAIN=your-auth0-domain
      AUTH0_AUDIENCE=your-api-audience
+     M2M_CLIENT_ID=your-m2m-client-id
+     M2M_CLIENT_SECRET=your-m2m-client-secret
      ```
 
 ## Usage

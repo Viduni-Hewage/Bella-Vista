@@ -29,18 +29,23 @@ const ProductCard = ({ product, onClick }) => {
       hoverable
       style={{ width: "100%", marginBottom: "1rem", borderRadius: 0 }}
       cover={
+      <div style={{ overflow: "hidden", width: "100%", height: "40vh" }}>
         <img
           alt={product.title}
           src={product.image}
           style={{
             objectFit: "contain",
             width: "100%",
-            height: "40vh",
+            height: "100%",
             borderRadius: 0,
-            cursor: "pointer"
+            cursor: "pointer",
+            transition: "transform 0.3s ease"
           }}
+          onMouseOver={(e) => e.target.style.transform = "scale(1.1)"}
+          onMouseOut={(e) => e.target.style.transform = "scale(1)"}
           onClick={onClick}
         />
+      </div>
       }
       actions={[
         <div key="like" onClick={handleLikeToggle} style={{ cursor: "pointer" }}>
