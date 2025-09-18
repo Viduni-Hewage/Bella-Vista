@@ -5,7 +5,7 @@
 ![MongoDB](https://img.shields.io/badge/MongoDB-6.0-green?logo=mongodb)
 ![Auth0](https://img.shields.io/badge/Auth0-Authentication-yellow)
 
-**Bella Vista** is a full-featured e-commerce web application specializing in **fashion accessories, jewelry, home decorations, and watches**. Users can browse curated products, manage their carts, and complete purchases seamlessly. The platform also includes an admin panel to efficiently manage order summaries and order statuses.
+**Bella Vista** is a full-featured e-commerce web application specializing in **fashion accessories, jewelry, home decorations, and watches**. Users can browse curated products, manage their carts, and complete purchases seamlessly.The platform also includes an admin panel that enables administrators to efficiently manage products, view and update order summaries and statuses, track payments and deliveries, and handle user management tasks.
 
 ## Features
 
@@ -19,6 +19,7 @@
 
 ### Admin Features
 - View overall website statistics.
+- Manage users: view users, delete accounts, and block/unblock users.
 - Manage products (Create, Read, Update, Delete).
 - View order summaries for all customers.
 - Track payment and delivery status.

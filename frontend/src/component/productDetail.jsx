@@ -15,20 +15,22 @@ const ProductDetail = () => {
   const { addToCart, isInCart, cartItems } = useCart();
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const { data } = await axios.get(`https://localhost:5000/api/products/${id}`);
-        setProduct(data);
-      } catch (error) {
-        console.error("Error fetching product:", error);
-        message.error("Failed to load product details");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchProduct = async () => {
+    console.log("Fetching product with ID:", id);
+    try {
+      const { data } = await axios.get(`https://localhost:5000/api/products/${id}`);
+      console.log("Product data received:", data);
+      setProduct(data.product);
+    } catch (error) {
+      console.error("Error fetching product:", error.response || error);
+      message.error("Failed to load product details");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchProduct();
-  }, [id]);
+  fetchProduct();
+}, [id]);
 
   const handleMenuClick = (e) => {
     navigate(`/shop-by-category/${e.key}`);

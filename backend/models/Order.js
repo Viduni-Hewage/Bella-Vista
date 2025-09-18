@@ -29,15 +29,13 @@ const orderSchema = new mongoose.Schema({
         const today = new Date();
         const given = new Date(value);
 
-        // must be today or future
         if (given < today.setHours(0, 0, 0, 0)) return false;
-        // exclude Sundays
         return given.getDay() !== 0;
       },
       message: "Delivery date must be today or later and not Sunday"
     }
   },
-  deliveryTime: { type: String, required: true }, // store as string "10:30 AM"
+  deliveryTime: { type: String, required: true },
   deliveryLocation: { type: String, required: true },
   status: { 
     type: String, 
