@@ -139,7 +139,7 @@ const CartPage = () => {
           {cartItems.length === 0 ? (
             <div style={{ fontSize: "1.1rem" }}>
               Your Cart Is Empty{" "}
-              <Link to="/" style={{ color: "#9b3803ff" }}>
+              <Link to="/shop-by-category" style={{ color: "#9b3803ff" }}>
                 Go Back
               </Link>
             </div>
