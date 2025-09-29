@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');
 const validateProduct = require('../middleware/validateProduct');
-const checkJwt = require('../middleware/authMiddleware');
+const checkJwt = require('../middleware/checkJwt');
 const checkAdmin = require('../middleware/adminAuth');
 
 router.get('/', productController.getAllProducts);

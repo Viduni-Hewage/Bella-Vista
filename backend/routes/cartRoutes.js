@@ -8,7 +8,7 @@ const {
   updateQuantity
 } = require('../controllers/cartController');
 
-const { protect } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/checkJwt');
 
 router.post('/', protect, addToCart);
 router.get('/', protect, getCart);

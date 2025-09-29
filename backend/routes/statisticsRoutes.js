@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const statisticsController = require('../controllers/statisticsController');
-const checkJwt = require('../middleware/authMiddleware');
+const checkJwt = require('../middleware/checkJwt');
 const checkAdmin = require('../middleware/adminAuth');
 
 router.get('/admin/dashboard', checkJwt, checkAdmin, statisticsController.getDashboardStats);

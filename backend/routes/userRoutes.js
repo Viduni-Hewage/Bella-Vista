@@ -6,7 +6,7 @@ const {
   unblockUser,
   deleteUser,
 } = require("../controllers/userController");
-const checkJwt = require("../middleware/authMiddleware");
+const checkJwt = require("../middleware/checkJwt");
 const adminAuth = require("../middleware/adminAuth");
 
 router.get("/", checkJwt, adminAuth, getAllUsers);
