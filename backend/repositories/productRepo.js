@@ -21,6 +21,12 @@ const findById = async (id) => {
   return Product.findById(id);
 };
 
+const findByIds = async (ids) => {
+  return Product.find({
+    _id: { $in: ids }
+  }).sort({ createdAt: -1 });
+};
+
 const findByCategory = async (category) => {
   const pipeline = applyPipeline(category);
   return Product.aggregate(pipeline);
@@ -43,6 +49,7 @@ module.exports = {
   findAll,
   findAllForAdmin,
   findById,
+  findByIds,
   findByCategory,
   createProduct,
   updateProduct,

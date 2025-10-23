@@ -9,6 +9,8 @@ router.get('/', productController.getAllProducts);
 router.get('/category/:category', productController.getProductsByCategory);
 router.get('/:id', productController.getProductById);
 
+router.post('/by-ids', productController.getProductsByIds);
+
 router.get('/admin/all', checkJwt, checkAdmin, productController.getAllProductsForAdmin);
 router.post('/', checkJwt, checkAdmin, validateProduct, productController.createProduct);
 router.patch('/:id', checkJwt, checkAdmin, validateProduct, productController.updateProduct);

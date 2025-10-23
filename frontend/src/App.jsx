@@ -21,6 +21,7 @@ import Auth0CallbackHandler from './component/auth0CallbackHandler';
 import ProfilePage from './pages/profile';
 import ProtectedRoute from './component/protectedRoute';
 import AdminDashboard from './pages/admin/adminDashboard';
+import FavouritePage from './pages/favourites';
 
 const App = () => {
   return (
@@ -51,6 +52,7 @@ const App = () => {
           <Route path="card-payment" element={<ProtectedRoute><CardPayment /></ProtectedRoute>} />
           <Route path="cod-payment" element={<ProtectedRoute><CodPayment /></ProtectedRoute>} />
           <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="favourites" element={<ProtectedRoute><FavouritePage /></ProtectedRoute>} />
 
 
         </Route>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Layout, Menu, Badge } from "antd";
-import { UserOutlined, ShoppingCartOutlined, LogoutOutlined, LoginOutlined, DashboardOutlined } from "@ant-design/icons";
+import { HeartOutlined, UserOutlined, ShoppingCartOutlined, LogoutOutlined, LoginOutlined, DashboardOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/useCart";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -89,12 +89,14 @@ const WebHeader = ({ visible }) => {
       }}
     >
       <div
+        className="logo"
         style={{
           fontSize: "2rem",
           fontWeight: "bold",
           fontFamily: "'Baskervville', serif",
           color: "#9b3803ff",
           cursor: "pointer",
+          transition: "transform 0.2s ease",
         }}
         onClick={() => navigate("/")}
       >
@@ -115,6 +117,31 @@ const WebHeader = ({ visible }) => {
       </Menu>
 
       <div style={{ fontSize: "1rem", display: "flex", alignItems: "center", position: "relative" }}>
+        <span
+          style={{
+            marginRight: "20px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "38px",
+            height: "38px",
+            borderRadius: "50%",
+            backgroundColor: "transparent",
+            transition: "all 0.3s ease",
+          }}
+          onClick={() => {
+              navigate("/favourites");                   
+          }}
+        >
+          <HeartOutlined
+            style={{
+              fontSize: "20px",
+              color: "black",
+              transition: "color 0.3s ease",
+            }}
+          />
+        </span>
         <span
           style={{
             marginRight: "20px",
@@ -214,6 +241,7 @@ const WebHeader = ({ visible }) => {
                 {isAuthenticated && (
                   <>
                     <button
+                      className="profile-btn"
                       onClick={() => {
                         navigate("/profile");
                         setShowUserCard(false);
@@ -229,7 +257,7 @@ const WebHeader = ({ visible }) => {
                         display: "flex",
                         alignItems: "center",
                         gap: "12px",
-                        transition: "background-color 0.2s ease",
+                        transition: "background-color 0.3s ease",
                       }}
                       onMouseEnter={(e) => (e.target.style.backgroundColor = "#f8f8f8")}
                       onMouseLeave={(e) => (e.target.style.backgroundColor = "transparent")}
@@ -255,7 +283,7 @@ const WebHeader = ({ visible }) => {
                           display: "flex",
                           alignItems: "center",
                           gap: "12px",
-                          transition: "background-color 0.2s ease",
+                          transition: "background-color 0.3s ease",
                         }}
                         onMouseEnter={(e) => (e.target.style.backgroundColor = "#f8f8f8")}
                         onMouseLeave={(e) => (e.target.style.backgroundColor = "transparent")}
@@ -291,7 +319,7 @@ const WebHeader = ({ visible }) => {
                     display: "flex",
                     alignItems: "center",
                     gap: "12px",
-                    transition: "background-color 0.2s ease",
+                    transition: "background-color 0.3s ease",
                   }}
                   onMouseEnter={(e) => {
                     e.target.style.backgroundColor = isAuthenticated ? "#fff2f0" : "#f6ffed";
@@ -314,7 +342,7 @@ const WebHeader = ({ visible }) => {
           )}
         </span>
 
-        <span style={{ cursor: "pointer", display: "flex", alignItems: "center" }} onClick={() => navigate("/cart")}>
+        <span className="cart-btn" style={{ cursor: "pointer", display: "flex", alignItems: "center" }} onClick={() => navigate("/cart")}>
           <Badge
             count={getCartCount()}
             offset={[0, 0]}

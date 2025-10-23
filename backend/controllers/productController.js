@@ -33,6 +33,40 @@ const getProductById = async (req, res) => {
   }
 };
 
+const getProductsByIds = async (req, res) => {
+  try {
+    const { ids } = req.body;
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide an array of product IDs',
+      });
+    }
+
+    if (ids.length > 100) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot fetch more than 100 products at once',
+      });
+    }
+
+    const products = await productService.getProductsByIds(ids);
+    
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      products: products,
+    });
+  } catch (err) {
+    console.error('Error fetching products by IDs:', err);
+    res.status(500).json({ 
+      success: false, 
+      message: err.message 
+    });
+  }
+};
+
 const getProductsByCategory = async (req, res) => {
   try {
     const products = await productService.getProductsByCategory(req.params.category);
@@ -76,6 +110,7 @@ module.exports = {
   getAllProducts,
   getAllProductsForAdmin,
   getProductById,
+  getProductsByIds,
   getProductsByCategory,
   createProduct,
   updateProduct,
